@@ -8,580 +8,1187 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;700;900&family=Source+Serif+4:opsz,wght@8..60,300;400;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ── APP UI ── */
-:root{--paper:#EDE6D6;--card:#F8F4EA;--ink:#20242B;--stamp:#A23B33;--brass:#A9824A;--line:#C9BFA8;--soft:#DAD2BC;}
-*{box-sizing:border-box;}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:'Source Serif 4',serif;line-height:1.5;}
-h1,h2,h3{font-family:'Fraunces',serif;}
-.app{max-width:1300px;margin:0 auto;padding:28px 20px 80px;}
-.masthead{display:flex;align-items:baseline;justify-content:space-between;gap:16px;border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:26px;flex-wrap:wrap;}
-.masthead h1{font-size:clamp(24px,3.5vw,36px);margin:0;letter-spacing:-0.01em;}
-.masthead .tag{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;opacity:0.55;}
-.layout{display:grid;grid-template-columns:310px 1fr;gap:22px;align-items:start;}
-@media(max-width:820px){.layout{grid-template-columns:1fr;}}
-.sidebar{background:var(--card);border:1px solid var(--line);padding:18px;position:sticky;top:14px;}
-.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--stamp);margin:0 0 3px;}
-.sidebar h2{font-size:17px;margin:0 0 14px;}
-label{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.65;margin:13px 0 5px;}
-select{width:100%;padding:8px 10px;font-family:'Source Serif 4',serif;font-size:14px;background:#fff;border:1px solid var(--line);color:var(--ink);}
-.world-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
-.world-btn{border:1px solid var(--line);background:#fff;padding:8px;text-align:left;cursor:pointer;}
-.world-btn b{display:block;font-family:'Fraunces',serif;font-size:13px;font-weight:700;margin-bottom:1px;}
-.world-btn small{font-family:'IBM Plex Mono',monospace;font-size:9px;opacity:0.55;}
-.world-btn[aria-pressed="true"]{border-color:var(--ink);background:var(--paper);box-shadow:inset 0 0 0 1px var(--ink);}
-.level-row{display:flex;flex-direction:column;gap:4px;}
-.level-btn{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);background:#fff;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;cursor:pointer;}
-.level-btn .desc{font-size:9px;opacity:0.5;}
-.level-btn[aria-pressed="true"]{border-color:var(--brass);background:#FBF3E3;}
-.gen-btn{width:100%;margin-top:16px;padding:12px;background:var(--stamp);color:#fff;border:none;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;cursor:pointer;}
-.gen-btn:disabled{opacity:0.4;cursor:not-allowed;}
-.hint{font-family:'IBM Plex Mono',monospace;font-size:10px;opacity:0.5;margin-top:7px;}
-.saved-section{margin-top:18px;border-top:1px dashed var(--line);padding-top:12px;}
-.saved-section h3{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;margin:0 0 8px;opacity:0.55;}
-.saved-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--soft);}
-.saved-item span{font-size:11px;}
-.saved-item button{background:none;border:none;color:var(--stamp);font-family:'IBM Plex Mono',monospace;font-size:10px;text-decoration:underline;cursor:pointer;padding:0;}
-.empty{font-family:'IBM Plex Mono',monospace;font-size:10px;opacity:0.45;}
-.main{min-height:400px;}
-.placeholder{border:1px dashed var(--line);padding:60px 20px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:0.4;}
-.quest-seal{background:var(--ink);color:var(--paper);padding:10px 16px;display:inline-block;margin-bottom:18px;}
-.quest-seal .qid{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;opacity:0.65;}
-.quest-seal .qtitle{font-family:'Fraunces',serif;font-size:17px;font-weight:700;margin-top:2px;}
-.sec-card{background:var(--card);border:1px solid var(--line);margin-bottom:14px;}
-.sec-tab{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 14px;background:var(--ink);color:var(--paper);cursor:pointer;user-select:none;}
-.sec-tab h3{margin:0;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;letter-spacing:0.04em;}
-.sec-tab-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-.sec-status{font-family:'IBM Plex Mono',monospace;font-size:10px;opacity:0.75;}
-.dl-btn{background:none;border:1px solid rgba(255,255,255,0.35);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10px;padding:3px 9px;cursor:pointer;white-space:nowrap;}
-.dl-btn:hover{background:rgba(255,255,255,0.12);}
-.dl-btn:disabled{opacity:0.4;cursor:default;}
-.sec-preview{padding:14px 18px;max-height:240px;overflow-y:auto;font-size:13px;line-height:1.65;white-space:pre-wrap;border-top:1px solid rgba(255,255,255,0.06);}
-.sec-preview.closed{display:none;}
-.pulse{display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 1s infinite ease-in-out;}
-@keyframes pulse{0%,100%{opacity:0.2;}50%{opacity:1;}}
-.err{color:var(--stamp);font-family:'IBM Plex Mono',monospace;font-size:11px;}
+/* ═══════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════ */
+:root {
+  --bg: #F5F3EE;
+  --surface: #FFFFFF;
+  --border: #E3DDD4;
+  --ink: #1A1917;
+  --ink-2: #6B6760;
+  --ink-3: #A8A49E;
+  --red: #A23B33;
+  --success: #2D6A4F;
+  --ac: #333; /* overridden per world */
+  --radius: 6px;
+  --shadow: 0 1px 3px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.05);
+  --shadow-md: 0 2px 8px rgba(0,0,0,.1), 0 8px 24px rgba(0,0,0,.08);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Source Serif 4', serif;
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+h1,h2,h3,h4 { font-family: 'Fraunces', serif; }
+button { font-family: inherit; cursor: pointer; }
+
+/* ═══════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════ */
+.shell {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  grid-template-rows: auto 1fr;
+  min-height: 100vh;
+}
+@media(max-width:820px){ .shell { grid-template-columns: 1fr; } }
+
+/* Top bar */
+.topbar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  height: 54px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar-brand {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.topbar-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* Sidebar */
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 20px;
+  height: calc(100vh - 54px);
+  overflow-y: auto;
+  position: sticky;
+  top: 54px;
+}
+.sidebar-section { margin-bottom: 20px; }
+.sidebar-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  display: block;
+  margin-bottom: 7px;
+}
+
+/* World selector */
+.world-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.world-btn {
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  padding: 10px 10px 8px;
+  text-align: left;
+  border-radius: var(--radius);
+  transition: border-color .15s, background .15s;
+}
+.world-btn:hover { border-color: var(--ink-3); }
+.world-btn b {
+  display: block;
+  font-family: 'Fraunces', serif;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 2px;
+  color: var(--ink);
+}
+.world-btn small {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  color: var(--ink-3);
+  line-height: 1.3;
+  display: block;
+}
+.world-btn[aria-pressed="true"] {
+  border-color: var(--ac);
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--ac);
+}
+.world-btn[aria-pressed="true"] b { color: var(--ac); }
+
+/* Level selector */
+.level-row { display: flex; flex-direction: column; gap: 4px; }
+.level-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 11px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  transition: border-color .15s;
+}
+.level-btn:hover { border-color: var(--ink-3); }
+.level-btn .desc { font-size: 9.5px; color: var(--ink-3); }
+.level-btn[aria-pressed="true"] { border-color: var(--ac); background: #fff; color: var(--ac); }
+
+/* Selects */
+select {
+  width: 100%;
+  padding: 8px 10px;
+  font-family: 'Source Serif 4', serif;
+  font-size: 14px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--ink);
+  cursor: pointer;
+}
+select:focus { outline: none; border-color: var(--ac); }
+
+/* Generate button */
+.gen-btn {
+  width: 100%;
+  padding: 11px 16px;
+  background: var(--ink);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  transition: background .15s, opacity .15s;
+}
+.gen-btn:hover:not(:disabled) { background: #333; }
+.gen-btn:disabled { opacity: 0.38; cursor: not-allowed; }
+.gen-hint {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-3);
+  margin-top: 7px;
+  text-align: center;
+}
+
+/* Divider */
+.divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+
+/* Saved list */
+.saved-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 8px;
+  display: block;
+}
+.saved-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.saved-item-info { font-size: 12px; color: var(--ink); }
+.saved-item-info b { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--ac); }
+.saved-open {
+  background: none;
+  border: none;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--ac);
+  text-decoration: underline;
+  padding: 0;
+  flex-shrink: 0;
+}
+.empty-note { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--ink-3); }
+
+/* ═══════════════════════════════════════
+   MAIN OUTPUT AREA
+═══════════════════════════════════════ */
+.main {
+  padding: 28px 32px;
+  min-height: calc(100vh - 54px);
+}
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  color: var(--ink-3);
+}
+.empty-state svg { margin-bottom: 16px; opacity: 0.35; }
+.empty-state h3 { font-size: 17px; color: var(--ink-2); margin: 0 0 6px; }
+.empty-state p { font-size: 13px; margin: 0; }
+
+/* Quest header */
+.quest-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.quest-id-badge {
+  background: var(--ink);
+  color: #fff;
+  padding: 4px 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  border-radius: 3px;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+.quest-title-block h2 {
+  font-size: 22px;
+  margin: 0 0 2px;
+  letter-spacing: -0.01em;
+}
+.quest-meta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-3);
+  letter-spacing: 0.06em;
+}
+
+/* Progress bar */
+.progress-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.progress-bar-bg {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: var(--ac);
+  border-radius: 2px;
+  transition: width .4s ease;
+}
+.progress-text {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+/* Section cards */
+.sec-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: box-shadow .2s;
+}
+.sec-card:hover { box-shadow: var(--shadow-md); }
+
+.sec-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  cursor: pointer;
+  gap: 12px;
+  border-bottom: 1px solid transparent;
+  transition: border-color .15s;
+}
+.sec-head.has-content { border-bottom-color: var(--border); }
+
+.sec-head-left { display: flex; align-items: center; gap: 10px; }
+.sec-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+}
+.sec-icon.queued { background: var(--border); color: var(--ink-3); }
+.sec-icon.generating { background: #FEF3CD; color: #92600A; }
+.sec-icon.done { background: #D4EDDA; color: var(--success); }
+.sec-icon.error { background: #FDDEDE; color: var(--red); }
+
+.sec-name {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+.sec-status {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-3);
+}
+.sec-head-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+.dl-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  background: var(--ac);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  transition: opacity .15s;
+}
+.dl-btn:hover { opacity: 0.85; }
+.dl-btn:disabled { opacity: 0.4; cursor: default; }
+
+.retry-btn {
+  padding: 4px 10px;
+  background: none;
+  border: 1px solid var(--red);
+  color: var(--red);
+  border-radius: 4px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+}
+.retry-btn:hover { background: #FFF0EF; }
+
+/* Section body */
+.sec-body { display: none; padding: 14px 16px; }
+.sec-body.open { display: block; }
+
+/* Loading shimmer */
+.shimmer {
+  background: linear-gradient(90deg, var(--border) 25%, #EDE9E0 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 4px;
+  height: 12px;
+  margin-bottom: 8px;
+}
+@keyframes shimmer { 0%{background-position:200%} 100%{background-position:-200%} }
+.shimmer.w80 { width: 80%; }
+.shimmer.w60 { width: 60%; }
+.shimmer.w90 { width: 90%; }
+
+/* Preview content */
+.preview-hook { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 300; line-height: 1.5; }
+.preview-hook p { margin: 0 0 3px; }
+.preview-hook .cta { font-weight: 700; }
+.preview-text { font-size: 13.5px; line-height: 1.65; color: var(--ink-2); }
+.preview-text p { margin: 0 0 6px; }
+.preview-qs { list-style: none; padding: 0; margin: 0; }
+.preview-qs li { font-size: 12.5px; padding: 5px 0; border-bottom: 1px solid var(--border); color: var(--ink-2); display: flex; gap: 8px; }
+.preview-qs li b { font-family: 'IBM Plex Mono', monospace; color: var(--ac); flex-shrink: 0; font-size: 11px; }
+.preview-stages { list-style: none; padding: 0; margin: 0; }
+.preview-stages li { font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 5px 0; border-bottom: 1px solid var(--border); color: var(--ink-2); display: flex; justify-content: space-between; }
+.preview-stages li b { color: var(--ac); }
+.preview-mission { font-size: 14px; font-style: italic; color: var(--ink-2); margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+.error-preview { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--red); }
+
+/* Generating animation */
+.gen-anim { padding: 8px 0; }
+
+/* Toggle hint */
+.toggle-hint { font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; color: var(--ink-3); }
+
+/* Pulse dot */
+@keyframes pulse { 0%,100%{opacity:.3} 50%{opacity:1} }
+.dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: currentColor; animation: pulse 1s infinite ease-in-out; margin-right: 2px; }
+.dot:nth-child(2) { animation-delay: .15s; }
+.dot:nth-child(3) { animation-delay: .3s; }
+
+/* ═══════════════════════════════════════
+   PDF TEMPLATE STYLES (injected per-render)
+═══════════════════════════════════════ */
+/* These are injected dynamically — see pdfCSS() fn */
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="masthead">
-    <h1>Risers' Quests</h1>
-    <div class="tag">Quest Generator · Guide Use Only</div>
-  </div>
-  <div class="layout">
-    <div class="sidebar">
-      <p class="eyebrow">New Quest</p>
-      <h2>Request Form</h2>
-      <label>World</label>
+<div class="shell">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <span class="topbar-brand">Risers' Quests</span>
+    <span class="topbar-tag">Quest Generator · Guide Use Only</span>
+  </header>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <span class="sidebar-label">World</span>
       <div class="world-grid" id="worldGrid"></div>
-      <label>Level</label>
+    </div>
+    <div class="sidebar-section">
+      <span class="sidebar-label">Level</span>
       <div class="level-row" id="levelRow"></div>
-      <label for="skillSel">Core Skill</label>
+    </div>
+    <div class="sidebar-section">
+      <span class="sidebar-label">Core Skill</span>
       <select id="skillSel"></select>
-      <label for="langSel">Language Skill (optional)</label>
+    </div>
+    <div class="sidebar-section">
+      <span class="sidebar-label">Language Skill (optional)</span>
       <select id="langSel"></select>
-      <button class="gen-btn" id="genBtn" disabled>Generate Quest</button>
-      <p class="hint" id="hint">Pick a World, a Level, and a Core Skill.</p>
-      <div class="saved-section">
-        <h3>Archived Quests</h3>
-        <div id="savedList"><p class="empty">None yet.</p></div>
-      </div>
     </div>
-    <div class="main" id="mainArea">
-      <div class="placeholder">Select inputs and generate a Quest to begin.</div>
+    <button class="gen-btn" id="genBtn" disabled>Generate Quest</button>
+    <p class="gen-hint" id="hint">Select World · Level · Core Skill</p>
+
+    <hr class="divider">
+
+    <span class="saved-label">Previously Generated</span>
+    <div id="savedList"><p class="empty-note">None yet.</p></div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" id="mainArea">
+    <div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="8" y="6" width="32" height="36" rx="3" stroke="currentColor" stroke-width="1.5"/>
+        <line x1="15" y1="16" x2="33" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="15" y1="22" x2="33" y2="22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="15" y1="28" x2="25" y2="28" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <h3>No quest generated yet</h3>
+      <p>Select a World, Level, and Core Skill<br>then click Generate Quest.</p>
     </div>
-  </div>
+  </main>
+
 </div>
-<div id="pdfZone" style="position:fixed;left:-99999px;top:0;width:794px;background:#fff;"></div>
+
+<!-- Hidden PDF render zone -->
+<div id="pdfZone" style="position:fixed;left:-99999px;top:0;width:794px;background:#fff;font-family:'Source Serif 4',serif;"></div>
 
 <script>
 'use strict';
 
-const WORLDS=[
-  {key:'Fantasy',letter:'F',desc:"A world that doesn't exist"},
-  {key:'Adventure',letter:'A',desc:'A real-world crisis to solve'},
-  {key:'Mystery',letter:'M',desc:'The science behind real events'},
-  {key:'Drama',letter:'D',desc:'Debate, art, or performance'},
+/* ═══════════════════════════════
+   CONSTANTS
+═══════════════════════════════ */
+const WORLDS = [
+  { key:'Fantasy',  letter:'F', desc:"A world that doesn't exist" },
+  { key:'Adventure',letter:'A', desc:'A real-world crisis to solve' },
+  { key:'Mystery',  letter:'M', desc:'Science behind real events' },
+  { key:'Drama',    letter:'D', desc:'Debate, art, or performance' },
 ];
-const LEVELS=[
-  {key:'Wanderer',desc:'most guided'},
-  {key:'Seeker',desc:'some open decisions'},
-  {key:'Explorer',desc:'self-directed'},
-  {key:'Pathfinder',desc:'fully open'},
+const LEVELS = [
+  { key:'Wanderer',   desc:'most guided' },
+  { key:'Seeker',     desc:'some open decisions' },
+  { key:'Explorer',   desc:'self-directed' },
+  { key:'Pathfinder', desc:'fully open' },
 ];
-const WORLD_COLORS={
-  Fantasy:'#5C4A9E',
-  Adventure:'#B85828',
-  Mystery:'#1E6460',
-  Drama:'#8C2333',
+const WORLD_COLORS = {
+  Fantasy:'#5C4A9E', Adventure:'#B85828', Mystery:'#1E6460', Drama:'#8C2333',
 };
-const MATH_SKILLS=['Number Sense & Operations','Number Fluency & Fact Mastery','Decimals','Fractions','Fractions, Decimals, Percentages','Integers (Positive & Negative Numbers)','Ratios & Proportions','Powers, Squares, Cubes','Algebra Foundations'];
-const SCIENCE_SKILLS=['Characteristics of Living Things','Plant Structure and Function','Basic Food Chains','Pollination and Seed Dispersal','Adaptations in Animals and Plants','States of Matter','Properties of Materials','Physical Changes','Mixtures','Push and Pull Forces','Gravity','Heat and Temperature','Simple Machines','Sound: Pitch and Volume','Light Reflection','Weather Patterns','Water Cycle','Solar System Basics','Rocks and Minerals','Moon Phases','Natural Disasters','Cell Structure and Function','Digestive System','Respiratory System','Photosynthesis','Ecosystems','Chemical and Physical Changes','Elements, Compounds, Mixtures','Solutions','Acids and Bases','Speed and Motion','Friction','Kinetic and Potential Energy','Electric Circuits','Reflection and Refraction','Properties of Waves','Magnets and Electromagnets','Rock Cycle','Atmosphere','Climate Zones','Earthquakes and Volcanoes','Circulatory System','Nervous System','Immune System','DNA and Genes','Inheritance and Traits','Variation in Species','Pollution and Climate Change','Chemical Reactions','pH Scale','Balancing Equations','Neutralization','Exothermic and Endothermic Reactions','Velocity and Acceleration',"Newton's Laws of Motion",'Conservation of Energy','Current, Voltage, Resistance','Electromagnetic Spectrum Basics','Climate Change','Advanced Weather Systems'];
-const LANG_SKILLS=['Reading Skills & Strategies','Text Analysis & Evidence','Research & Informational Reading','Digital Literacy & Communication','Writing Process','Grammar, Style & Vocabulary','Performance & Oral Expression','Sentence Structure','Story Structure','Narrative Elements','Discussion & Debate'];
-
-const WORLD_SVGS={
-  Mystery:`<svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="20" cy="20" r="13"/><line x1="30" y1="30" x2="44" y2="44" stroke-width="2.5"/><line x1="20" y1="13" x2="20" y2="27" stroke-width="1"/><circle cx="20" cy="31" r="1.8" fill="currentColor" stroke="none"/></svg>`,
-  Fantasy:`<svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M30 5 A17 17 0 1 0 30 41 A12 12 0 1 1 30 5Z"/><circle cx="43" cy="9" r="2" fill="currentColor" stroke="none"/><circle cx="46" cy="21" r="1.5" fill="currentColor" stroke="none"/><circle cx="44" cy="3" r="1.5" fill="currentColor" stroke="none"/></svg>`,
-  Adventure:`<svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="24" cy="24" r="19"/><polygon points="24,7 27,22 24,19 21,22" fill="currentColor" stroke="none"/><polygon points="24,41 27,26 24,29 21,26" fill="none" stroke="currentColor" stroke-width="1.2"/><line x1="5" y1="24" x2="43" y2="24" stroke-width="0.8"/><line x1="24" y1="5" x2="24" y2="43" stroke-width="0.8"/></svg>`,
-  Drama:`<svg width="54" height="42" viewBox="0 0 54 42" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><ellipse cx="16" cy="19" rx="12" ry="14"/><circle cx="10" cy="15" r="2" fill="currentColor" stroke="none"/><circle cx="22" cy="15" r="2" fill="currentColor" stroke="none"/><path d="M10 25 Q16 33 22 25"/><ellipse cx="38" cy="22" rx="12" ry="14"/><circle cx="32" cy="18" r="2" fill="currentColor" stroke="none"/><circle cx="44" cy="18" r="2" fill="currentColor" stroke="none"/><path d="M32 30 Q38 22 44 30"/></svg>`,
+const WORLD_SVGS = {
+  Mystery:`<svg width="50" height="50" viewBox="0 0 50 50" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="21" cy="21" r="14"/><line x1="31" y1="31" x2="45" y2="45" stroke-width="2.5"/><line x1="21" y1="14" x2="21" y2="28" stroke-width="1"/><circle cx="21" cy="32" r="1.8" fill="currentColor" stroke="none"/></svg>`,
+  Fantasy:`<svg width="50" height="50" viewBox="0 0 50 50" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M32 6 A18 18 0 1 0 32 44 A13 13 0 1 1 32 6Z"/><circle cx="44" cy="10" r="2" fill="currentColor" stroke="none"/><circle cx="47" cy="22" r="1.5" fill="currentColor" stroke="none"/><circle cx="46" cy="4" r="1.5" fill="currentColor" stroke="none"/></svg>`,
+  Adventure:`<svg width="50" height="50" viewBox="0 0 50 50" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="25" cy="25" r="19"/><polygon points="25,8 28,23 25,20 22,23" fill="currentColor" stroke="none"/><polygon points="25,42 28,27 25,30 22,27" fill="none" stroke="currentColor" stroke-width="1.2"/><line x1="6" y1="25" x2="44" y2="25" stroke-width="0.8"/><line x1="25" y1="6" x2="25" y2="44" stroke-width="0.8"/></svg>`,
+  Drama:`<svg width="56" height="44" viewBox="0 0 56 44" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><ellipse cx="17" cy="20" rx="13" ry="15"/><circle cx="11" cy="16" r="2" fill="currentColor" stroke="none"/><circle cx="23" cy="16" r="2" fill="currentColor" stroke="none"/><path d="M11 26 Q17 34 23 26"/><ellipse cx="39" cy="23" rx="13" ry="15"/><circle cx="33" cy="19" r="2" fill="currentColor" stroke="none"/><circle cx="45" cy="19" r="2" fill="currentColor" stroke="none"/><path d="M33 31 Q39 23 45 31"/></svg>`,
 };
 
-const SECTION_ORDER=['hook','preQuestCheck','archives','links','questPack'];
-const SECTION_LABELS={hook:'Hook Card',preQuestCheck:'Pre-Quest Check',archives:'Archives',links:'Links',questPack:'Quest Pack'};
-const SECTION_TOKENS={hook:500,preQuestCheck:1400,archives:4000,questPack:5500,links:800};
+const MATH_SKILLS = ['Number Sense & Operations','Number Fluency & Fact Mastery','Decimals','Fractions','Fractions, Decimals, Percentages','Integers (Positive & Negative Numbers)','Ratios & Proportions','Powers, Squares, Cubes','Algebra Foundations'];
+const SCIENCE_SKILLS = ['Characteristics of Living Things','Plant Structure and Function','Basic Food Chains','Pollination and Seed Dispersal','Adaptations in Animals and Plants','States of Matter','Properties of Materials','Physical Changes','Mixtures','Push and Pull Forces','Gravity','Heat and Temperature','Simple Machines','Sound: Pitch and Volume','Light Reflection','Weather Patterns','Water Cycle','Solar System Basics','Rocks and Minerals','Moon Phases','Natural Disasters','Cell Structure and Function','Digestive System','Respiratory System','Photosynthesis','Ecosystems','Chemical and Physical Changes','Elements, Compounds, Mixtures','Solutions','Acids and Bases','Speed and Motion','Friction','Kinetic and Potential Energy','Electric Circuits','Reflection and Refraction','Properties of Waves','Magnets and Electromagnets','Rock Cycle','Atmosphere','Climate Zones','Earthquakes and Volcanoes','Circulatory System','Nervous System','Immune System','DNA and Genes','Inheritance and Traits','Variation in Species','Pollution and Climate Change','Chemical Reactions','pH Scale','Balancing Equations','Neutralization','Exothermic and Endothermic Reactions','Velocity and Acceleration',"Newton's Laws of Motion",'Conservation of Energy','Current, Voltage, Resistance','Electromagnetic Spectrum Basics','Climate Change','Advanced Weather Systems'];
+const LANG_SKILLS = ['Reading Skills & Strategies','Text Analysis & Evidence','Research & Informational Reading','Digital Literacy & Communication','Writing Process','Grammar, Style & Vocabulary','Performance & Oral Expression','Sentence Structure','Story Structure','Narrative Elements','Discussion & Debate'];
 
-let ST={world:null,level:null,skill:null,subject:null,lang:'',brief:null,sections:{}};
-let qCount=parseInt(localStorage.getItem('rq_count')||'0');
+const SECTION_ORDER = ['hook','preQuestCheck','archives','links','questPack'];
+const SECTION_LABELS = { hook:'Hook Card', preQuestCheck:'Pre-Quest Check', archives:'Archives', links:'Links', questPack:'Quest Pack' };
+const SECTION_TOKENS = { hook:500, preQuestCheck:1400, archives:4000, questPack:5000, links:800 };
 
-const SPEC=`You are the generation engine for "Risers' Quests" — a program where children aged 8-14 complete 3-day hands-on projects (Quests) at school, guided by an adult Guide. Generate Quest documents as JSON only.
+let ST = { world:null, level:null, skill:null, subject:null, lang:'', brief:null, sections:{} };
+let qCount = parseInt(localStorage.getItem('rq_count')||'0');
+let acColor = '#333';
 
-LEVELS: Wanderer (explicit step-by-step, child follows alone, vocabulary age 8), Seeker (clear steps with some open decisions, vocabulary age 10, short concrete sentences), Explorer (loose prompts, Riser finds own path), Pathfinder (minimal scaffolding, fully open).
+/* ═══════════════════════════════
+   UTILS
+═══════════════════════════════ */
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function ac() { return WORLD_COLORS[ST.world] || '#333'; }
+function setRootAC(c) {
+  document.documentElement.style.setProperty('--ac', c);
+  acColor = c;
+}
+
+/* Robust JSON parser — 3 strategies */
+function robustParse(raw) {
+  let text = raw.trim();
+  text = text.replace(/^```(?:json)?\s*/im, '').replace(/\s*```$/m, '').trim();
+  text = text.replace(/^\uFEFF/, '');
+  const s = text.indexOf('{'), e = text.lastIndexOf('}');
+  if (s !== -1 && e > s) text = text.substring(s, e + 1);
+
+  try { return JSON.parse(text); } catch(_) {}
+
+  // Normalize smart quotes
+  try {
+    return JSON.parse(
+      text.replace(/[\u2018\u2019\u201A\u201B]/g,"'").replace(/[\u201C\u201D\u201E\u201F]/g,'"')
+    );
+  } catch(_) {}
+
+  // Remove non-ASCII and try again
+  try {
+    return JSON.parse(text.replace(/[^\x20-\x7E\n\r\t\{\}\[\]:,"\\]/g,''));
+  } catch(_) {}
+
+  throw new Error('Could not read response — will retry');
+}
+
+async function callAPI(system, user, maxTokens = 1500) {
+  const r = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ system, user, maxTokens })
+  });
+  const d = await r.json();
+  if (!r.ok) throw new Error(d.error || `Server error ${r.status}`);
+  return d.text;
+}
+
+async function callWithRetry(system, user, maxTokens, maxTries = 3) {
+  let lastErr;
+  for (let i = 0; i < maxTries; i++) {
+    try {
+      const raw = await callAPI(system, user, maxTokens);
+      return robustParse(raw);
+    } catch(e) {
+      lastErr = e;
+      if (i < maxTries - 1) await sleep(1500 * (i + 1));
+    }
+  }
+  throw lastErr;
+}
+
+/* ═══════════════════════════════
+   MASTER SPEC
+═══════════════════════════════ */
+const SPEC = `You are the generation engine for "Risers' Quests" — a program where children aged 8-14 complete 3-day projects at school. Generate Quest documents as JSON. CRITICAL JSON RULE: Never put actual line breaks inside string values. Use the two-character sequence backslash-n (written as \\n) for paragraph breaks within strings.
+
+LEVELS: Wanderer (explicit step-by-step, child follows alone, age 8 vocabulary), Seeker (clear steps with some open decisions, age 10 vocabulary, short concrete sentences), Explorer (loose prompts, Riser finds own path), Pathfinder (minimal scaffolding, fully open).
 
 WORLDS: Fantasy (world that doesn't exist; real science separates fact from fiction), Adventure (real-world crisis the Riser can respond to), Mystery (scientific explanation behind real events), Drama (scientific or philosophical thinking applied to debate, art, or performance).
 
-HOOK CARD RULES:
-1. The Riser IS the person in the situation. Second person, present tense ("You are...", "You have just..."). Extraordinary, specific premise.
-2. Short lines, not paragraphs. Max 12 words per line. 4-6 lines. Final line: imperative, 5 words max.
-3. Wanderer/Seeker: every word a 9-year-old reads easily. Concrete and sensory.
-4. NEVER use: quest, mission, task, challenge, learn, skill, science, maths.
+HOOK CARD: The Riser IS the person. Second person present tense. Extraordinary, impossible-feeling premise. Short lines max 12 words each. 4-6 lines. Final line: imperative 5 words max. Wanderer/Seeker: 9-year-old vocabulary, concrete and sensory. NEVER: quest, mission, task, challenge, learn, skill, science, maths.
 
-SIX STAGES (always 3 Days):
-Stage 1 Deep Dive (Day 1, Research): read Archives.
-Stage 2 Brain Dump (Day 1, Thinking): free processing; formats: Mind Map / List / Sketch / Connect / Write.
-Stage 3 Blueprint (Day 2, Planning): Part A = 5 prediction questions; Part B = design recording tool (Table/Tracker/Grid/Tree/Flowchart).
-Stage 4 "Experiment Zero" (Science) or "Data Analysis" (Math) (Day 2, Doing): step-by-step work, then compare to Stage 3 prediction.
-Stage 5 What If (Day 3, Transfer): un-researchable twist, reasoning not lookup.
-Stage 6 Leave a Door Open (Day 3, Reflection): one genuinely new question.
-Close: Present Your Case.
+SIX STAGES: Stage 1 Deep Dive (Day 1 Research), Stage 2 Brain Dump (Day 1 Thinking, formats: Mind Map/List/Sketch/Connect/Write), Stage 3 Blueprint (Day 2 Planning: Part A=5 prediction questions, Part B=recording tool design), Stage 4 named "Experiment Zero" for Science or "Data Analysis" for Math (Day 2 Doing: step-by-step then compare to prediction), Stage 5 What If (Day 3 Transfer: un-researchable twist), Stage 6 Leave a Door Open (Day 3 Reflection: one genuinely new question). Close: Present Your Case.
 
-ARCHIVES: Riser-facing narrative reading. Part 1: real historical anchor + interesting facts + core knowledge. Part 2: mission setup, hand Riser the problem/data. If requiresLinks=true (Explorer only): stop short of one technique. If false: fully self-contained. End always: "Something in here matters for what comes next. You decide what."
-
-LINKS (Explorer only, when needed): Real stable URLs only: mathsisfun.com, bbc.co.uk/bitesize, khanacademy.org, nasa.gov. Max 2.
-
-PRE-QUEST CHECK: 5 questions, no answer key. Q1=MCQ (core concept). Q2-Q5=short answer escalating. Q5 isomorphic to Quest mechanic. Close with specific gating question guidance.
+ARCHIVES: Riser-facing narrative reading. Part 1: real historical anchor + surprising facts + core content knowledge. Part 2: mission setup handing Riser the problem/data. For Explorer only if requiresLinks=true: stop short of one technique. Otherwise fully self-contained. Final sentence: "Something in here matters for what comes next. You decide what."
 
 BRANDING: "Risers' Quests". Quest ID = World-letter + 2-digit number. Label "Level" not "Difficulty". Never print Subject, Format, Track, Academic.`;
 
-function ctx(){return `World: ${ST.world}\nLevel: ${ST.level}\nCore Skill: ${ST.skill}\nSubject: ${ST.subject}\nLanguage Skill: ${ST.lang||'integrate organically'}`;}
-
-async function callAPI(system,user,maxTokens=1500){
-  const r=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system,user,maxTokens})});
-  const d=await r.json();
-  if(!r.ok) throw new Error(d.error||`HTTP ${r.status}`);
-  return d.text;
+/* ═══════════════════════════════
+   PROMPTS — simplified schemas
+═══════════════════════════════ */
+function ctx() {
+  return `World: ${ST.world}\nLevel: ${ST.level}\nCore Skill: ${ST.skill}\nSubject: ${ST.subject}\nLanguage: ${ST.lang||'integrate organically'}`;
 }
-function parseJ(raw){return JSON.parse(raw.replace(/```json|```/g,'').trim());}
-function ac(){return WORLD_COLORS[ST.world]||'#333';}
 
-const PROMPTS={
-  brief:()=>`${ctx()}\nReturn ONLY this JSON:\n{"questId":"${WORLDS.find(w=>w.key===ST.world).letter}-${String(qCount+1).padStart(2,'0')}","missionTitle":"string","stage4Name":"Experiment Zero or Data Analysis","requiresLinks":false,"linkGapDescription":null}\nrequiresLinks=true ONLY if Level is Explorer AND a genuine procedural gap is essential.`,
-  hook:(b)=>`${ctx()}\nQuest ID: ${b.questId}\nMission: ${b.missionTitle}\nReturn ONLY: {"hookLines":["line 1","line 2","line 3","line 4","short imperative."]}\nRules: second person present tense, Riser IS in the situation, 4-6 lines max 12 words each, final line 5 words max imperative, Wanderer/Seeker vocab a 9-year-old reads easily, NEVER mention: quest mission task challenge learn skill science maths.`,
-  preQuestCheck:(b)=>`${ctx()}\nQuest ID: ${b.questId}\nMission: ${b.missionTitle}\nReturn ONLY: {"questions":[{"number":1,"type":"mcq","text":"...","options":["A","B","C","D"]},{"number":2,"type":"short","text":"..."},{"number":3,"type":"short","text":"..."},{"number":4,"type":"short","text":"..."},{"number":5,"type":"short","text":"..."}],"gatingQs":[3,4],"gatingSuggestion":"If Q3 and Q4 felt shaky — ... If Q3 and Q4 were fine — ... If all five felt comfortable — ..."}\nQ1=MCQ concept, Q2-Q5 escalating short answer, Q5 isomorphic to Quest mechanic without revealing it.`,
-  archives:(b)=>`${ctx()}\nQuest ID: ${b.questId}\nMission: ${b.missionTitle}\nRequires gap: ${b.requiresLinks}\nReturn ONLY: {"parts":[{"title":"Part 1: Title","paragraphs":["para1","para2","para3"],"table":null},{"title":"Part 2: Title","paragraphs":["para1","para2"],"table":{"headers":["Col1","Col2","Col3"],"rows":[["a","b","c"]]}}]}\ntable=null if none needed. Narrative not textbook. Real history + interesting facts + core knowledge. Final paragraph: "Something in here matters for what comes next. You decide what." If requiresLinks=false give ALL techniques needed.`,
-  questPack:(b)=>`${ctx()}\nQuest ID: ${b.questId}\nMission: ${b.missionTitle}\nStage 4: ${b.stage4Name}\nReturn ONLY: {"mission":"2-3 sentence immersive text","stages":[{"number":1,"name":"Deep Dive","day":"Day 1","role":"Research","content":"instruction","prompt":null,"items":null,"partA":null,"partB":null},{"number":2,"name":"Brain Dump","day":"Day 1","role":"Thinking","content":"instruction","prompt":"quoted prompt","items":null,"partA":null,"partB":null},{"number":3,"name":"Blueprint","day":"Day 2","role":"Planning","content":null,"prompt":null,"items":null,"partA":["Q1?","Q2?","Q3?","Q4?","Q5?"],"partB":"Part B instruction"},{"number":4,"name":"${b.stage4Name}","day":"Day 2","role":"Doing","content":"opening instruction","prompt":null,"items":["step1","step2","step3","step4","compare to prediction"],"partA":null,"partB":null},{"number":5,"name":"What If","day":"Day 3","role":"Transfer","content":"full what if scenario","prompt":null,"items":null,"partA":null,"partB":null},{"number":6,"name":"Leave a Door Open","day":"Day 3","role":"Reflection","content":"instruction","prompt":null,"items":null,"partA":null,"partB":null}],"presentYourCase":"text","materials":null}\nPrescriptiveness must match Level exactly. materials=null unless physically hands-on.`,
-  links:(b)=>`${ctx()}\nQuest ID: ${b.questId}\nGap: ${b.linkGapDescription}\nReturn ONLY: {"links":[{"number":1,"covers":"max 10 words","detail":"when to use","url":"https://real.url"}],"guideNote":"instructions"}\nReal URLs only: mathsisfun.com bbc.co.uk/bitesize khanacademy.org nasa.gov. Max 2 links.`,
+const PROMPTS = {
+
+  brief: () => `${ctx()}\n\nReturn ONLY valid JSON (no markdown, no extra text):\n{"questId":"${WORLDS.find(w=>w.key===ST.world).letter}-${String(qCount+1).padStart(2,'0')}","missionTitle":"string","stage4Name":"Experiment Zero or Data Analysis","requiresLinks":false,"linkGapDescription":null}`,
+
+  hook: (b) => `${ctx()}\nQuest: ${b.questId} — ${b.missionTitle}\n\nReturn ONLY valid JSON:\n{"hookLines":["line1","line2","line3","line4","imperative."]}\n\nHook rules: second person present tense, Riser IS in the situation, 4-6 lines max 12 words each, last line imperative max 5 words, Wanderer/Seeker use 9-year-old vocabulary, NEVER: quest mission task challenge learn skill.`,
+
+  preQuestCheck: (b) => `${ctx()}\nQuest: ${b.questId} — ${b.missionTitle}\n\nReturn ONLY valid JSON:\n{"questions":[{"n":1,"type":"mcq","text":"...","opts":["A","B","C","D"]},{"n":2,"type":"short","text":"..."},{"n":3,"type":"short","text":"..."},{"n":4,"type":"short","text":"..."},{"n":5,"type":"short","text":"..."}],"gatingQs":[3,4],"gating":"If Q3 and Q4 felt shaky — find a different quest for now. If Q3 and Q4 were fine — give this a go, it will stretch you well. If all five felt comfortable — you are ready."}\n\nQ1=MCQ testing core concept. Q2-Q5=short answer escalating difficulty. Q5=quietly isomorphic to Quest mechanic. No answer key.`,
+
+  archives: (b) => `${ctx()}\nQuest: ${b.questId} — ${b.missionTitle}\nRequires Links gap: ${b.requiresLinks}\n\nReturn ONLY valid JSON. Use \\n for paragraph breaks within strings, never actual newlines:\n{"p1Title":"Part 1: Title","p1Content":"Paragraph one.\\n\\nParagraph two.\\n\\nParagraph three.","hasTable":false,"tableHeaders":["Col1","Col2","Col3"],"tableRows":[["a","b","c"]],"p2Title":"Part 2: Title","p2Content":"Paragraph one.\\n\\nParagraph two. Something in here matters for what comes next. You decide what."}\n\nPart 1: real historical anchor story + surprising facts + core content knowledge, written narratively. Part 2: mission setup, hand Riser the problem/data. hasTable=true only if a comparison table genuinely helps. If requiresLinks=false: give ALL techniques needed.`,
+
+  questPack: (b) => `${ctx()}\nQuest: ${b.questId} — ${b.missionTitle}\nStage 4 name: ${b.stage4Name}\n\nReturn ONLY valid JSON. Use \\n for line breaks within strings, never actual newlines:\n{"mission":"2-3 sentence mission statement","s1":"Stage 1 instruction","s2Prompt":"Quoted Brain Dump prompt","s2":"Stage 2 instruction","s3Questions":["Prediction Q1?","Prediction Q2?","Prediction Q3?","Prediction Q4?","Prediction Q5?"],"s3PartB":"Part B recording tool instruction","s4Intro":"Stage 4 opening instruction","s4Steps":["Step 1","Step 2","Step 3","Step 4","Step 5 — compare to your prediction"],"s5":"What If scenario text","s6":"Leave a Door Open instruction","present":"Present Your Case text","materials":null}\n\nPrescriptiveness MUST match Level: Wanderer=explicit numbered steps; Seeker=clear with some open choices; Explorer=loose prompts; Pathfinder=minimal. materials=array of strings only if physically hands-on, else null.`,
+
+  links: (b) => `${ctx()}\nQuest: ${b.questId}\nGap to fill: ${b.linkGapDescription}\n\nReturn ONLY valid JSON:\n{"links":[{"n":1,"covers":"short description max 10 words","detail":"when to use and what Riser finds","url":"https://real.stable.url"}],"guideNote":"Send before Day 1 only after Riser has read Archives, never in advance."}\n\nReal stable URLs only: mathsisfun.com, bbc.co.uk/bitesize, khanacademy.org, nasa.gov. Max 2 links. Never invent URLs.`,
 };
 
-/* ── UI ── */
-function renderWorldGrid(){
-  const g=document.getElementById('worldGrid');g.innerHTML='';
-  WORLDS.forEach(w=>{
-    const b=document.createElement('button');b.className='world-btn';b.type='button';
-    b.setAttribute('aria-pressed',ST.world===w.key);
-    b.innerHTML=`<b>${w.key}</b><small>${w.desc}</small>`;
-    b.onclick=()=>{ST.world=w.key;renderWorldGrid();checkReady();};
+/* ═══════════════════════════════
+   UI RENDERING
+═══════════════════════════════ */
+function renderWorldGrid() {
+  const g = document.getElementById('worldGrid'); g.innerHTML = '';
+  WORLDS.forEach(w => {
+    const b = document.createElement('button'); b.className = 'world-btn'; b.type = 'button';
+    b.setAttribute('aria-pressed', ST.world === w.key);
+    b.innerHTML = `<b>${w.key}</b><small>${w.desc}</small>`;
+    if (ST.world === w.key) b.style.setProperty('--ac', WORLD_COLORS[w.key]);
+    b.onclick = () => { ST.world = w.key; setRootAC(WORLD_COLORS[w.key]||'#333'); renderWorldGrid(); checkReady(); };
     g.appendChild(b);
   });
 }
-function renderLevelRow(){
-  const r=document.getElementById('levelRow');r.innerHTML='';
-  LEVELS.forEach(l=>{
-    const b=document.createElement('button');b.className='level-btn';b.type='button';
-    b.setAttribute('aria-pressed',ST.level===l.key);
-    b.innerHTML=`<span>${l.key}</span><span class="desc">${l.desc}</span>`;
-    b.onclick=()=>{ST.level=l.key;renderLevelRow();checkReady();};
+
+function renderLevelRow() {
+  const r = document.getElementById('levelRow'); r.innerHTML = '';
+  LEVELS.forEach(l => {
+    const b = document.createElement('button'); b.className = 'level-btn'; b.type = 'button';
+    b.setAttribute('aria-pressed', ST.level === l.key);
+    b.innerHTML = `<span>${l.key}</span><span class="desc">${l.desc}</span>`;
+    b.onclick = () => { ST.level = l.key; renderLevelRow(); checkReady(); };
     r.appendChild(b);
   });
 }
-function renderSkillSelect(){
-  const s=document.getElementById('skillSel');
-  s.innerHTML='<option value="">— choose a Core Skill —</option>';
-  const mg=document.createElement('optgroup');mg.label='Math';
-  MATH_SKILLS.forEach(sk=>{const o=document.createElement('option');o.value='math|'+sk;o.textContent=sk;mg.appendChild(o);});
-  const sg=document.createElement('optgroup');sg.label='Science';
-  SCIENCE_SKILLS.forEach(sk=>{const o=document.createElement('option');o.value='science|'+sk;o.textContent=sk;sg.appendChild(o);});
-  s.appendChild(mg);s.appendChild(sg);
-  s.onchange=()=>{if(!s.value){ST.skill=null;ST.subject=null;}else{const[sub,nm]=s.value.split('|');ST.subject=sub;ST.skill=nm;}checkReady();};
+
+function renderSkillSelect() {
+  const s = document.getElementById('skillSel');
+  s.innerHTML = '<option value="">— choose a Core Skill —</option>';
+  const mg = document.createElement('optgroup'); mg.label = 'Math';
+  MATH_SKILLS.forEach(sk => { const o = document.createElement('option'); o.value = 'math|'+sk; o.textContent = sk; mg.appendChild(o); });
+  const sg = document.createElement('optgroup'); sg.label = 'Science';
+  SCIENCE_SKILLS.forEach(sk => { const o = document.createElement('option'); o.value = 'science|'+sk; o.textContent = sk; sg.appendChild(o); });
+  s.appendChild(mg); s.appendChild(sg);
+  s.onchange = () => {
+    if (!s.value) { ST.skill = null; ST.subject = null; }
+    else { const [sub, nm] = s.value.split('|'); ST.subject = sub; ST.skill = nm; }
+    checkReady();
+  };
 }
-function renderLangSelect(){
-  const s=document.getElementById('langSel');
-  s.innerHTML='<option value="">— integrate organically (default) —</option>';
-  LANG_SKILLS.forEach(sk=>{const o=document.createElement('option');o.value=sk;o.textContent=sk;s.appendChild(o);});
-  s.onchange=()=>{ST.lang=s.value;};
+
+function renderLangSelect() {
+  const s = document.getElementById('langSel');
+  s.innerHTML = '<option value="">— integrate organically (default) —</option>';
+  LANG_SKILLS.forEach(sk => { const o = document.createElement('option'); o.value = sk; o.textContent = sk; s.appendChild(o); });
+  s.onchange = () => { ST.lang = s.value; };
 }
-function checkReady(){
-  const ok=ST.world&&ST.level&&ST.skill;
-  document.getElementById('genBtn').disabled=!ok;
-  document.getElementById('hint').textContent=ok?`Ready: ${ST.world} · ${ST.level} · ${ST.skill}`:'Pick a World, a Level, and a Core Skill.';
+
+function checkReady() {
+  const ok = ST.world && ST.level && ST.skill;
+  document.getElementById('genBtn').disabled = !ok;
+  document.getElementById('hint').textContent = ok
+    ? `${ST.world} · ${ST.level} · ${ST.skill}`
+    : 'Select World · Level · Core Skill';
 }
-function renderSavedList(){
-  const el=document.getElementById('savedList');
-  const keys=Object.keys(localStorage).filter(k=>k.startsWith('rq:'));
-  if(!keys.length){el.innerHTML='<p class="empty">None yet.</p>';return;}
-  el.innerHTML='';
-  keys.sort().reverse().forEach(k=>{
-    try{
-      const d=JSON.parse(localStorage.getItem(k));
-      const row=document.createElement('div');row.className='saved-item';
-      const sp=document.createElement('span');sp.innerHTML=`<b>${d.brief.questId}</b> ${d.brief.missionTitle}`;
-      const btn=document.createElement('button');btn.textContent='Open';
-      btn.onclick=()=>reopenQuest(d);
-      row.appendChild(sp);row.appendChild(btn);el.appendChild(row);
-    }catch(e){}
+
+function renderSavedList() {
+  const el = document.getElementById('savedList');
+  const keys = Object.keys(localStorage).filter(k => k.startsWith('rq:'));
+  if (!keys.length) { el.innerHTML = '<p class="empty-note">None yet.</p>'; return; }
+  el.innerHTML = '';
+  keys.sort().reverse().slice(0, 12).forEach(k => {
+    try {
+      const d = JSON.parse(localStorage.getItem(k));
+      const row = document.createElement('div'); row.className = 'saved-item';
+      const info = document.createElement('div'); info.className = 'saved-item-info';
+      info.innerHTML = `<b>${d.brief.questId}</b> ${d.brief.missionTitle}`;
+      const btn = document.createElement('button'); btn.className = 'saved-open'; btn.textContent = 'Open';
+      btn.onclick = () => reopenQuest(d);
+      row.appendChild(info); row.appendChild(btn); el.appendChild(row);
+    } catch(e) {}
   });
 }
 
-/* ── GENERATE ── */
-async function generate(){
-  document.getElementById('genBtn').disabled=true;
-  ST.sections={};ST.brief=null;
-  const main=document.getElementById('mainArea');
-  main.innerHTML='<div class="placeholder"><span class="pulse"></span> Drafting mission brief…</div>';
-  let brief;
-  try{
-    const raw=await callAPI(SPEC+'\n\nRespond ONLY with valid JSON. No preamble, no markdown fences.',PROMPTS.brief(),400);
-    brief=parseJ(raw);
-    if(ST.level!=='Explorer')brief.requiresLinks=false;
-    ST.brief=brief;qCount++;localStorage.setItem('rq_count',qCount);
-  }catch(e){
-    main.innerHTML=`<p class="err">Brief failed — ${e.message}. <button onclick="generate()">Retry</button></p>`;
-    document.getElementById('genBtn').disabled=false;return;
-  }
-  main.innerHTML='';
-  const seal=document.createElement('div');seal.className='quest-seal';
-  seal.innerHTML=`<div class="qid">${brief.questId}</div><div class="qtitle">${brief.missionTitle}</div>`;
-  main.appendChild(seal);
-  const secs=SECTION_ORDER.filter(s=>s!=='links'||brief.requiresLinks);
-  secs.forEach(key=>main.appendChild(buildCard(key)));
-  await Promise.all(secs.map(key=>genSection(key,brief)));
-  localStorage.setItem('rq:'+brief.questId,JSON.stringify({brief,world:ST.world,level:ST.level,skill:ST.skill,lang:ST.lang,sections:ST.sections}));
-  renderSavedList();
-  document.getElementById('genBtn').disabled=false;
+/* ═══════════════════════════════
+   SECTION CARD BUILDERS
+═══════════════════════════════ */
+function iconHTML(state) {
+  if (state === 'done') return '<svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  if (state === 'error') return '<svg width="12" height="12" viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+  if (state === 'generating') return '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+  return '·';
 }
 
-function buildCard(key){
-  const card=document.createElement('div');card.className='sec-card';card.id='card-'+key;
-  const tab=document.createElement('div');tab.className='sec-tab';
-  tab.innerHTML=`<h3>${SECTION_LABELS[key]}</h3><div class="sec-tab-right" id="tabr-${key}"><span class="sec-status"><span class="pulse"></span> generating…</span></div>`;
-  tab.onclick=()=>document.getElementById('prev-'+key).classList.toggle('closed');
-  const prev=document.createElement('div');prev.className='sec-preview closed';prev.id='prev-'+key;
-  card.appendChild(tab);card.appendChild(prev);
+function buildCard(key, state = 'queued') {
+  const card = document.createElement('div'); card.className = 'sec-card'; card.id = 'sc-'+key;
+  const head = document.createElement('div'); head.className = 'sec-head'; head.id = 'sh-'+key;
+  head.innerHTML = `
+    <div class="sec-head-left">
+      <div class="sec-icon ${state}" id="si-${key}">${iconHTML(state)}</div>
+      <span class="sec-name">${SECTION_LABELS[key]}</span>
+    </div>
+    <div class="sec-head-right" id="shr-${key}">
+      <span class="sec-status" id="ss-${key}">${state === 'queued' ? 'Queued' : ''}</span>
+    </div>`;
+  const body = document.createElement('div'); body.className = 'sec-body'; body.id = 'sb-'+key;
+  card.appendChild(head); card.appendChild(body);
+  head.onclick = () => { if (body.innerHTML) body.classList.toggle('open'); };
   return card;
 }
 
-function sectionSummary(key,data){
-  try{
-    if(key==='hook')return data.hookLines.join('\n');
-    if(key==='preQuestCheck')return data.questions.map(q=>`${q.number}. ${q.text}`).join('\n\n')+'\n\n'+data.gatingSuggestion;
-    if(key==='archives')return data.parts.map(p=>p.title+'\n'+p.paragraphs.join('\n')).join('\n\n');
-    if(key==='questPack')return 'MISSION\n'+data.mission+'\n\n'+data.stages.map(s=>`Stage ${s.number} — ${s.name}`).join('\n');
-    if(key==='links')return data.links.map(l=>`Link ${l.number}: ${l.covers}\n${l.url}`).join('\n\n');
-  }catch(e){}return JSON.stringify(data,null,2);
+function setCardGenerating(key) {
+  document.getElementById('si-'+key).className = 'sec-icon generating';
+  document.getElementById('si-'+key).innerHTML = iconHTML('generating');
+  document.getElementById('ss-'+key).textContent = 'Generating…';
+  const body = document.getElementById('sb-'+key);
+  body.innerHTML = `<div class="gen-anim"><div class="shimmer w90"></div><div class="shimmer w60"></div><div class="shimmer w80"></div></div>`;
+  body.classList.add('open');
+  document.getElementById('sh-'+key).classList.add('has-content');
 }
 
-async function genSection(key,brief){
-  const sys=SPEC+'\n\nRespond ONLY with valid JSON. No preamble, no markdown fences.';
-  try{
-    let prompt;
-    switch(key){
-      case 'hook':prompt=PROMPTS.hook(brief);break;
-      case 'preQuestCheck':prompt=PROMPTS.preQuestCheck(brief);break;
-      case 'archives':prompt=PROMPTS.archives(brief);break;
-      case 'questPack':prompt=PROMPTS.questPack(brief);break;
-      case 'links':prompt=PROMPTS.links(brief);break;
+function setCardDone(key, data, brief) {
+  document.getElementById('si-'+key).className = 'sec-icon done';
+  document.getElementById('si-'+key).innerHTML = iconHTML('done');
+  document.getElementById('ss-'+key).textContent = 'Ready';
+  document.getElementById('shr-'+key).innerHTML = `<button class="dl-btn" id="dlbtn-${key}" onclick="dlPDF('${key}')">↓ PDF</button>`;
+  const body = document.getElementById('sb-'+key);
+  body.innerHTML = buildPreview(key, data);
+  body.classList.add('open');
+}
+
+function setCardError(key, msg) {
+  document.getElementById('si-'+key).className = 'sec-icon error';
+  document.getElementById('si-'+key).innerHTML = iconHTML('error');
+  document.getElementById('ss-'+key).textContent = '';
+  document.getElementById('shr-'+key).innerHTML = `<button class="retry-btn" onclick="retrySec('${key}')">↺ Retry</button>`;
+  const body = document.getElementById('sb-'+key);
+  body.innerHTML = `<p class="error-preview">Something went wrong generating this section. Click Retry to try again.</p>`;
+  body.classList.add('open');
+}
+
+function buildPreview(key, data) {
+  try {
+    if (key === 'hook') {
+      return '<div class="preview-hook">' + (data.hookLines||[]).map((l,i) => `<p class="${i===data.hookLines.length-1?'cta':''}">${l}</p>`).join('') + '</div>';
     }
-    const raw=await callAPI(sys,prompt,SECTION_TOKENS[key]);
-    const data=parseJ(raw);
-    ST.sections[key]=data;
-    document.getElementById('prev-'+key).textContent=sectionSummary(key,data);
-    document.getElementById('tabr-'+key).innerHTML=`<button class="dl-btn" id="dlbtn-${key}" onclick="dlPDF('${key}')">↓ PDF</button><span class="sec-status">Ready</span>`;
-  }catch(e){
-    document.getElementById('tabr-'+key).innerHTML=`<span class="sec-status err">${e.message} <button onclick="retrySec('${key}')" style="background:none;border:none;color:var(--stamp);text-decoration:underline;cursor:pointer;font-size:10px;">retry</button></span>`;
+    if (key === 'preQuestCheck') {
+      const qs = (data.questions||[]).map(q => `<li><b>${q.n||q.number}</b>${q.text}</li>`).join('');
+      return `<ul class="preview-qs">${qs}</ul>`;
+    }
+    if (key === 'archives') {
+      const p1 = (data.p1Content||'').split('\n\n')[0] || '';
+      return `<p class="preview-text" style="font-weight:600;margin-bottom:4px;">${data.p1Title||''}</p><div class="preview-text"><p>${p1.substring(0,300)}${p1.length>300?'…':''}</p></div>`;
+    }
+    if (key === 'questPack') {
+      const stageNames = ['Deep Dive','Brain Dump','Blueprint',ST.brief?.stage4Name||'Stage 4','What If','Leave a Door Open'];
+      const stageItems = stageNames.map((nm,i) => `<li><b>Stage ${i+1}</b>${nm}</li>`).join('');
+      return `<p class="preview-mission">${(data.mission||'').substring(0,200)}…</p><ul class="preview-stages">${stageItems}</ul>`;
+    }
+    if (key === 'links') {
+      return '<div class="preview-text">' + (data.links||[]).map(l=>`<p><b>${l.covers}</b><br><span style="font-family:monospace;font-size:11px;color:#1E6460;">${l.url}</span></p>`).join('') + '</div>';
+    }
+  } catch(e) {}
+  return '<p class="empty-note">Content ready — click ↓ PDF to download.</p>';
+}
+
+/* ═══════════════════════════════
+   PROGRESS BAR
+═══════════════════════════════ */
+let totalSecs = 0;
+let doneSecs = 0;
+
+function updateProgress() {
+  const fill = document.getElementById('progFill');
+  const text = document.getElementById('progText');
+  if (!fill || !text) return;
+  const pct = totalSecs ? Math.round((doneSecs / totalSecs) * 100) : 0;
+  fill.style.width = pct + '%';
+  text.textContent = `${doneSecs} of ${totalSecs} sections`;
+}
+
+/* ═══════════════════════════════
+   GENERATE
+═══════════════════════════════ */
+const SYS_JSON = SPEC + '\n\nRespond ONLY with valid JSON. No markdown fences, no explanatory text, no preamble.';
+
+async function generate() {
+  document.getElementById('genBtn').disabled = true;
+  ST.sections = {}; ST.brief = null;
+  setRootAC(ac());
+
+  const main = document.getElementById('mainArea');
+  main.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:300px;"><span class="empty-note"><span class="dot"></span><span class="dot"></span><span class="dot"></span> Creating mission brief…</span></div>';
+
+  // Step 1: brief
+  let brief;
+  try {
+    brief = await callWithRetry(SYS_JSON, PROMPTS.brief(), 400);
+    if (ST.level !== 'Explorer') brief.requiresLinks = false;
+    ST.brief = brief;
+    qCount++;
+    localStorage.setItem('rq_count', qCount);
+  } catch(e) {
+    main.innerHTML = `<div class="empty-state"><h3>Couldn't create the quest brief</h3><p>${e.message}</p><br><button class="gen-btn" style="max-width:200px;" onclick="generate()">Try Again</button></div>`;
+    document.getElementById('genBtn').disabled = false;
+    return;
   }
-}
-async function retrySec(key){
-  document.getElementById('tabr-'+key).innerHTML='<span class="sec-status"><span class="pulse"></span> retrying…</span>';
-  await genSection(key,ST.brief);
-  if(ST.brief)localStorage.setItem('rq:'+ST.brief.questId,JSON.stringify({brief:ST.brief,world:ST.world,level:ST.level,skill:ST.skill,lang:ST.lang,sections:ST.sections}));
+
+  // Build output frame
+  const secs = SECTION_ORDER.filter(s => s !== 'links' || brief.requiresLinks);
+  totalSecs = secs.length; doneSecs = 0;
+
+  main.innerHTML = '';
+
+  // Quest header
+  const hdr = document.createElement('div'); hdr.className = 'quest-header';
+  hdr.innerHTML = `<div class="quest-id-badge">${brief.questId}</div><div class="quest-title-block"><h2>${brief.missionTitle}</h2><div class="quest-meta">${ST.world} · ${ST.level} · ${ST.skill}</div></div>`;
+  main.appendChild(hdr);
+
+  // Progress
+  const prog = document.createElement('div'); prog.className = 'progress-wrap';
+  prog.innerHTML = `<div class="progress-bar-bg"><div class="progress-bar-fill" id="progFill" style="width:0%"></div></div><span class="progress-text" id="progText">0 of ${secs.length} sections</span>`;
+  main.appendChild(prog);
+
+  // Cards
+  secs.forEach(key => main.appendChild(buildCard(key, 'queued')));
+
+  // Sequential generation
+  for (const key of secs) {
+    setCardGenerating(key);
+    try {
+      let prompt;
+      switch(key) {
+        case 'hook': prompt = PROMPTS.hook(brief); break;
+        case 'preQuestCheck': prompt = PROMPTS.preQuestCheck(brief); break;
+        case 'archives': prompt = PROMPTS.archives(brief); break;
+        case 'questPack': prompt = PROMPTS.questPack(brief); break;
+        case 'links': prompt = PROMPTS.links(brief); break;
+      }
+      const data = await callWithRetry(SYS_JSON, prompt, SECTION_TOKENS[key]);
+      ST.sections[key] = data;
+      setCardDone(key, data, brief);
+      doneSecs++;
+      updateProgress();
+    } catch(e) {
+      setCardError(key, e.message);
+      doneSecs++;
+      updateProgress();
+    }
+  }
+
+  // Save
+  localStorage.setItem('rq:'+brief.questId, JSON.stringify({
+    brief, world: ST.world, level: ST.level, skill: ST.skill, lang: ST.lang, sections: ST.sections
+  }));
+  renderSavedList();
+  document.getElementById('genBtn').disabled = false;
 }
 
-/* ── PDF TEMPLATES ── */
+async function retrySec(key) {
+  if (!ST.brief) return;
+  setCardGenerating(key);
+  try {
+    let prompt;
+    switch(key) {
+      case 'hook': prompt = PROMPTS.hook(ST.brief); break;
+      case 'preQuestCheck': prompt = PROMPTS.preQuestCheck(ST.brief); break;
+      case 'archives': prompt = PROMPTS.archives(ST.brief); break;
+      case 'questPack': prompt = PROMPTS.questPack(ST.brief); break;
+      case 'links': prompt = PROMPTS.links(ST.brief); break;
+    }
+    const data = await callWithRetry(SYS_JSON, prompt, SECTION_TOKENS[key]);
+    ST.sections[key] = data;
+    setCardDone(key, data, ST.brief);
+  } catch(e) {
+    setCardError(key, e.message);
+  }
+  localStorage.setItem('rq:'+ST.brief.questId, JSON.stringify({
+    brief: ST.brief, world: ST.world, level: ST.level, skill: ST.skill, lang: ST.lang, sections: ST.sections
+  }));
+}
 
-function pdfStyles(color){
+/* ═══════════════════════════════
+   REOPEN
+═══════════════════════════════ */
+function reopenQuest(saved) {
+  ST = { world:saved.world, level:saved.level, skill:saved.skill, subject:null, lang:saved.lang||'', brief:saved.brief, sections:saved.sections };
+  setRootAC(WORLD_COLORS[saved.world]||'#333');
+  const main = document.getElementById('mainArea'); main.innerHTML = '';
+  const hdr = document.createElement('div'); hdr.className = 'quest-header';
+  hdr.innerHTML = `<div class="quest-id-badge">${saved.brief.questId}</div><div class="quest-title-block"><h2>${saved.brief.missionTitle}</h2><div class="quest-meta">${saved.world} · ${saved.level} · ${saved.skill}</div></div>`;
+  main.appendChild(hdr);
+  Object.keys(saved.sections).forEach(key => {
+    const card = buildCard(key, 'done'); main.appendChild(card);
+    setCardDone(key, saved.sections[key], saved.brief);
+  });
+}
+
+/* ═══════════════════════════════
+   PDF TEMPLATES
+═══════════════════════════════ */
+function pdfCSS(color) {
   return `<style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;700;900&family=Source+Serif+4:opsz,wght@8..60,300;400;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
   :root{--ac:${color};}
   *{box-sizing:border-box;margin:0;padding:0;}
   .pdf{font-family:'Source Serif 4',serif;color:#111;background:#fff;width:210mm;padding:15mm 18mm 14mm;font-size:10.5pt;line-height:1.6;}
-
-  /* Running header & footer */
-  .rhead{font-family:'IBM Plex Mono',monospace;font-size:6.5pt;letter-spacing:0.07em;text-transform:uppercase;border-bottom:0.5pt solid #ccc;padding-bottom:3.5pt;margin-bottom:10mm;display:flex;justify-content:space-between;align-items:baseline;}
-  .rhead .ac{color:var(--ac);font-weight:600;}
-  .rfoot{font-family:'IBM Plex Mono',monospace;font-size:6.5pt;letter-spacing:0.06em;text-transform:uppercase;border-top:0.5pt solid #ccc;padding-top:3.5pt;margin-top:10mm;display:flex;justify-content:space-between;color:#888;}
-
-  /* ── HOOK CARD ── */
-  .hook{min-height:268mm;display:flex;flex-direction:column;position:relative;}
-  .hook-deco{position:absolute;top:0;right:0;color:var(--ac);opacity:0.55;}
-  .hook-world-row{display:flex;align-items:flex-end;gap:14pt;margin-bottom:3mm;}
-  .hook-letter{font-family:'Fraunces',serif;font-size:82pt;font-weight:900;line-height:1;letter-spacing:-0.03em;color:var(--ac);}
-  .hook-world-stack{padding-bottom:7pt;}
-  .hook-world-name{font-family:'IBM Plex Mono',monospace;font-size:9.5pt;letter-spacing:0.22em;text-transform:uppercase;display:block;color:var(--ac);}
-  .hook-world-sub{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:0.1em;opacity:0.5;display:block;margin-top:2pt;}
-  .hook-rule{border:none;border-top:1pt solid var(--ac);margin:6mm 0 7mm;opacity:0.4;}
-  .hook-mission-lbl{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:0.18em;text-transform:uppercase;opacity:0.45;margin-bottom:3pt;}
-  .hook-title{font-family:'Fraunces',serif;font-size:31pt;font-weight:900;line-height:1.08;letter-spacing:-0.01em;margin-bottom:10mm;}
-  .hook-line{font-family:'Fraunces',serif;font-size:14pt;font-weight:300;line-height:1.45;margin-bottom:4pt;}
-  .hook-line.cta{font-weight:700;margin-top:8mm;}
-  .hook-bottom{margin-top:auto;padding-top:8mm;border-top:1pt solid var(--ac);display:flex;justify-content:space-between;align-items:flex-end;}
-  .hook-lbl{font-family:'IBM Plex Mono',monospace;font-size:6.5pt;letter-spacing:0.12em;text-transform:uppercase;opacity:0.5;display:block;margin-bottom:2pt;}
-  .hook-val{font-family:'Fraunces',serif;font-size:11pt;font-weight:700;}
-  .hook-qid{font-family:'IBM Plex Mono',monospace;font-size:8pt;color:var(--ac);font-weight:600;}
-
-  /* ── PRE-QUEST CHECK ── */
-  .pqc-title{font-family:'Fraunces',serif;font-size:23pt;font-weight:700;margin-bottom:2pt;}
-  .pqc-rule{border:none;border-top:2pt solid var(--ac);margin:3pt 0 4pt;width:48pt;}
-  .pqc-sub{font-family:'IBM Plex Mono',monospace;font-size:8pt;letter-spacing:0.04em;opacity:0.6;margin-bottom:7mm;}
-  .pqc-intro{font-style:italic;font-size:10pt;margin-bottom:7mm;padding-bottom:3mm;border-bottom:0.5pt solid #ddd;}
-  .pq{margin-bottom:6.5mm;page-break-inside:avoid;}
+  .rh{font-family:'IBM Plex Mono',monospace;font-size:6.5pt;letter-spacing:.07em;text-transform:uppercase;border-bottom:.5pt solid #ccc;padding-bottom:3.5pt;margin-bottom:10mm;display:flex;justify-content:space-between;align-items:baseline;}
+  .rh .i{color:var(--ac);font-weight:600;}
+  .rf{font-family:'IBM Plex Mono',monospace;font-size:6.5pt;letter-spacing:.06em;text-transform:uppercase;border-top:.5pt solid #ccc;padding-top:3.5pt;margin-top:10mm;display:flex;justify-content:space-between;color:#999;}
+  /* Hook Card */
+  .hook{min-height:267mm;display:flex;flex-direction:column;position:relative;}
+  .hook-deco{position:absolute;top:0;right:0;color:var(--ac);opacity:.5;}
+  .hw-row{display:flex;align-items:flex-end;gap:12pt;margin-bottom:4mm;}
+  .hw-ltr{font-family:'Fraunces',serif;font-size:80pt;font-weight:900;line-height:1;letter-spacing:-.03em;color:var(--ac);}
+  .hw-st{padding-bottom:6pt;}
+  .hw-name{font-family:'IBM Plex Mono',monospace;font-size:9.5pt;letter-spacing:.22em;text-transform:uppercase;display:block;color:var(--ac);}
+  .hw-sub{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:.1em;opacity:.5;display:block;margin-top:2pt;}
+  .h-rule{border:none;border-top:1pt solid var(--ac);opacity:.35;margin:4mm 0 6mm;}
+  .h-mlbl{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:.18em;text-transform:uppercase;opacity:.4;margin-bottom:3pt;}
+  .h-title{font-family:'Fraunces',serif;font-size:30pt;font-weight:900;line-height:1.08;letter-spacing:-.01em;margin-bottom:9mm;}
+  .h-line{font-family:'Fraunces',serif;font-size:13.5pt;font-weight:300;line-height:1.45;margin-bottom:4pt;}
+  .h-line.cta{font-weight:700;margin-top:7mm;}
+  .h-bot{margin-top:auto;padding-top:7mm;border-top:1pt solid var(--ac);display:flex;justify-content:space-between;align-items:flex-end;}
+  .h-lbl{font-family:'IBM Plex Mono',monospace;font-size:6.5pt;letter-spacing:.12em;text-transform:uppercase;opacity:.45;display:block;margin-bottom:2pt;}
+  .h-val{font-family:'Fraunces',serif;font-size:11pt;font-weight:700;}
+  .h-qid{font-family:'IBM Plex Mono',monospace;font-size:8.5pt;color:var(--ac);font-weight:600;}
+  /* Pre-Quest Check */
+  .pqc-title{font-family:'Fraunces',serif;font-size:22pt;font-weight:700;margin-bottom:2pt;}
+  .pqc-rule{border:none;border-top:2pt solid var(--ac);margin:3pt 0 4pt;width:44pt;}
+  .pqc-sub{font-family:'IBM Plex Mono',monospace;font-size:8pt;letter-spacing:.04em;opacity:.55;margin-bottom:7mm;}
+  .pqc-intro{font-style:italic;font-size:10pt;margin-bottom:7mm;padding-bottom:3mm;border-bottom:.5pt solid #ddd;}
+  .pq{margin-bottom:6mm;page-break-inside:avoid;}
   .pq-row{display:flex;gap:8pt;align-items:baseline;}
   .pq-num{font-family:'IBM Plex Mono',monospace;font-size:9pt;font-weight:600;min-width:16pt;color:var(--ac);}
   .pq-text{font-size:10.5pt;flex:1;}
-  .mcq-opts{display:grid;grid-template-columns:1fr 1fr;gap:3pt 14pt;margin:5pt 0 0 24pt;}
-  .mcq-opt{display:flex;align-items:baseline;gap:5pt;font-size:9.5pt;}
-  .mcq-box{width:9pt;height:9pt;border:0.75pt solid #555;display:inline-block;flex-shrink:0;margin-top:1pt;}
+  .mopts{display:grid;grid-template-columns:1fr 1fr;gap:3pt 14pt;margin:5pt 0 0 24pt;}
+  .mopt{display:flex;align-items:baseline;gap:5pt;font-size:9.5pt;}
+  .mbox{width:9pt;height:9pt;border:.75pt solid #555;display:inline-block;flex-shrink:0;margin-top:1pt;}
   .work{margin:5pt 0 0 24pt;}
-  .work-lbl{font-family:'IBM Plex Mono',monospace;font-size:6.5pt;letter-spacing:0.08em;text-transform:uppercase;opacity:0.4;margin-bottom:1pt;}
-  .wline{border:none;border-bottom:0.5pt solid #bbb;height:7mm;width:100%;display:block;margin-bottom:2pt;}
-  .ans-row{display:flex;gap:10pt;align-items:flex-end;}
-  .ans-lbl{font-family:'IBM Plex Mono',monospace;font-size:6.5pt;letter-spacing:0.06em;text-transform:uppercase;opacity:0.45;white-space:nowrap;}
-  .ans-line{flex:1;border:none;border-bottom:0.75pt solid #222;height:5.5mm;}
-  .gating{margin-top:8mm;padding:4mm 5mm;border-left:3pt solid var(--ac);background:#fafafa;font-size:9.5pt;line-height:1.6;}
-
-  /* ── ARCHIVES ── */
-  .arch-title{font-family:'Fraunces',serif;font-size:27pt;font-weight:300;margin-bottom:2pt;}
+  .wlbl{font-family:'IBM Plex Mono',monospace;font-size:6.5pt;letter-spacing:.08em;text-transform:uppercase;opacity:.38;margin-bottom:1pt;}
+  .wl{border:none;border-bottom:.5pt solid #bbb;height:7mm;width:100%;display:block;margin-bottom:2pt;}
+  .ar{display:flex;gap:10pt;align-items:flex-end;}
+  .al{font-family:'IBM Plex Mono',monospace;font-size:6.5pt;letter-spacing:.06em;text-transform:uppercase;opacity:.38;white-space:nowrap;}
+  .aline{flex:1;border:none;border-bottom:.75pt solid #222;height:5mm;}
+  .gating{margin-top:7mm;padding:4mm 5mm;border-left:3pt solid var(--ac);background:#fafafa;font-size:9.5pt;line-height:1.6;}
+  /* Archives */
+  .arch-title{font-family:'Fraunces',serif;font-size:26pt;font-weight:300;margin-bottom:2pt;}
   .arch-rule{border:none;border-top:2pt solid var(--ac);margin:3pt 0 3pt;width:36pt;}
-  .arch-mission{font-size:10.5pt;font-style:italic;opacity:0.65;margin-bottom:9mm;padding-bottom:4mm;border-bottom:0.5pt solid #ddd;}
-  .part-title{font-family:'Fraunces',serif;font-size:13pt;font-weight:700;color:var(--ac);margin:8mm 0 3mm;padding-bottom:2mm;border-bottom:0.5pt solid var(--ac);}
+  .arch-mission{font-size:10.5pt;font-style:italic;opacity:.6;margin-bottom:8mm;padding-bottom:3mm;border-bottom:.5pt solid #ddd;}
+  .pt{font-family:'Fraunces',serif;font-size:13pt;font-weight:700;color:var(--ac);margin:7mm 0 2.5mm;padding-bottom:2mm;border-bottom:.75pt solid var(--ac);}
   .arch p{margin:0 0 3.5mm;font-size:10.5pt;}
-  .data-tbl{width:100%;border-collapse:collapse;margin:5mm 0;font-size:9.5pt;}
-  .data-tbl th{font-family:'IBM Plex Mono',monospace;font-size:7.5pt;letter-spacing:0.06em;text-transform:uppercase;text-align:left;padding:2.5mm 3mm;background:var(--ac);color:#fff;border:none;}
-  .data-tbl td{padding:2.5mm 3mm;border-bottom:0.5pt solid #e0e0e0;vertical-align:top;}
-  .data-tbl tr:nth-child(even) td{background:#f7f7f7;}
-
-  /* ── QUEST PACK ── */
-  .pack-meta{font-family:'IBM Plex Mono',monospace;font-size:7.5pt;letter-spacing:0.05em;opacity:0.6;margin-bottom:6mm;}
-  .pack-meta b{opacity:1;font-weight:600;color:var(--ac);}
-  .mission-lbl{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:0.16em;text-transform:uppercase;color:var(--ac);margin-bottom:2pt;font-weight:600;}
-  .mission-text{font-size:11pt;margin-bottom:9mm;padding-bottom:5mm;border-bottom:1pt solid #ddd;}
-  .stage{margin-bottom:7mm;page-break-inside:avoid;}
-  .stage-hdr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3mm;padding-bottom:2.5mm;border-bottom:1.5pt solid var(--ac);}
-  .stage-l{display:flex;align-items:baseline;gap:9pt;}
-  .stage-num{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:0.1em;text-transform:uppercase;opacity:0.45;}
-  .stage-name{font-family:'Fraunces',serif;font-size:14pt;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:var(--ac);}
-  .stage-r{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:0.06em;text-transform:uppercase;opacity:0.45;text-align:right;}
-  .stage-prompt{font-family:'Fraunces',serif;font-size:11pt;font-style:italic;font-weight:300;margin:0 0 3mm;padding:3mm 4mm;border-left:2pt solid var(--ac);}
-  .stage-content{font-size:10.5pt;margin:0 0 2.5mm;}
-  .stage-items{margin:2.5mm 0;padding:0;list-style:none;}
-  .stage-items li{font-size:10pt;padding:2mm 0 2mm 14pt;border-bottom:0.5pt solid #eeeeee;position:relative;}
-  .stage-items li::before{content:'→';position:absolute;left:0;color:var(--ac);font-size:9pt;}
-  .bp-a-lbl{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:0.1em;text-transform:uppercase;color:var(--ac);font-weight:600;margin-bottom:3mm;}
-  .bp-grid{display:grid;grid-template-columns:1fr 1fr;gap:3mm;margin-bottom:4mm;}
-  .bp-cell{border:0.5pt solid #ddd;padding:3mm;min-height:17mm;}
-  .bp-cell.full{grid-column:1/-1;}
-  .bp-q{font-size:9pt;opacity:0.65;margin-bottom:1mm;}
-  .bp-space{min-height:9mm;}
-  .bp-b{margin:3mm 0;padding:3mm 4mm;border-left:2pt solid var(--ac);background:#fafafa;}
-  .bp-b-lbl{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:0.1em;text-transform:uppercase;color:var(--ac);font-weight:600;margin-bottom:2mm;}
-  .rec-opts{display:flex;gap:6pt;flex-wrap:wrap;margin-top:3mm;}
-  .rec-opts span{border:0.5pt solid #aaa;padding:1.5pt 7pt;font-family:'IBM Plex Mono',monospace;font-size:8pt;}
-  .present{margin-top:8mm;padding:4mm 5mm;border:1pt solid var(--ac);page-break-inside:avoid;}
-  .present-lbl{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:0.1em;text-transform:uppercase;color:var(--ac);font-weight:600;margin-bottom:3mm;}
-  .mats{margin-top:4mm;padding:3mm 4mm;border:0.5pt dashed #aaa;}
-  .mats-lbl{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:0.1em;text-transform:uppercase;opacity:0.5;margin-bottom:2mm;}
-  .mats-list{display:flex;flex-wrap:wrap;gap:5pt;list-style:none;}
-  .mats-list li{font-size:9pt;padding:1.5pt 7pt;border:0.5pt solid #bbb;background:#f5f5f5;}
-
-  /* ── LINKS ── */
-  .links-title{font-family:'Fraunces',serif;font-size:21pt;font-weight:700;margin-bottom:2pt;}
-  .links-rule{border:none;border-top:2pt solid var(--ac);margin:3pt 0 3pt;width:36pt;}
-  .links-sub{font-family:'IBM Plex Mono',monospace;font-size:7.5pt;letter-spacing:0.06em;opacity:0.55;margin-bottom:7mm;padding-bottom:3mm;border-bottom:0.5pt solid #ddd;}
-  .link-item{margin-bottom:6mm;padding-bottom:6mm;border-bottom:0.5pt solid #e8e8e8;page-break-inside:avoid;}
-  .link-num{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:0.1em;text-transform:uppercase;color:var(--ac);font-weight:600;margin-bottom:1.5pt;}
-  .link-covers{font-family:'Fraunces',serif;font-size:12pt;font-weight:700;margin-bottom:2mm;}
-  .link-detail{font-size:10pt;margin-bottom:2mm;}
-  .link-url{font-family:'IBM Plex Mono',monospace;font-size:8.5pt;color:var(--ac);}
-  .guide-note{margin-top:7mm;padding:4mm 5mm;border:0.75pt solid var(--ac);}
-  .guide-note-lbl{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:0.1em;text-transform:uppercase;color:var(--ac);font-weight:600;margin-bottom:2mm;}
+  .dtbl{width:100%;border-collapse:collapse;margin:5mm 0;font-size:9.5pt;}
+  .dtbl th{font-family:'IBM Plex Mono',monospace;font-size:7.5pt;letter-spacing:.06em;text-transform:uppercase;text-align:left;padding:2.5mm 3mm;background:var(--ac);color:#fff;}
+  .dtbl td{padding:2.5mm 3mm;border-bottom:.5pt solid #e0e0e0;vertical-align:top;}
+  .dtbl tr:nth-child(even) td{background:#f8f8f8;}
+  /* Quest Pack */
+  .pm{font-family:'IBM Plex Mono',monospace;font-size:7.5pt;letter-spacing:.05em;opacity:.55;margin-bottom:5mm;}
+  .pm b{opacity:1;font-weight:600;color:var(--ac);}
+  .mlbl{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:.16em;text-transform:uppercase;color:var(--ac);margin-bottom:2pt;font-weight:600;}
+  .mtext{font-size:11pt;margin-bottom:8mm;padding-bottom:4mm;border-bottom:1pt solid #ddd;}
+  .stg{margin-bottom:7mm;page-break-inside:avoid;}
+  .stg-hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3mm;padding-bottom:2.5mm;border-bottom:1.5pt solid var(--ac);}
+  .stg-l{display:flex;align-items:baseline;gap:9pt;}
+  .stg-n{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:.1em;text-transform:uppercase;opacity:.38;}
+  .stg-nm{font-family:'Fraunces',serif;font-size:14pt;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ac);}
+  .stg-r{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:.06em;text-transform:uppercase;opacity:.38;}
+  .stg-prm{font-family:'Fraunces',serif;font-size:11pt;font-style:italic;font-weight:300;margin:0 0 3mm;padding:3mm 4mm;border-left:2pt solid var(--ac);}
+  .stg-cnt{font-size:10.5pt;margin:0 0 2.5mm;}
+  .stg-items{margin:2.5mm 0;padding:0;list-style:none;}
+  .stg-items li{font-size:10pt;padding:2mm 0 2mm 14pt;border-bottom:.5pt solid #eee;position:relative;}
+  .stg-items li::before{content:'→';position:absolute;left:0;color:var(--ac);font-size:9pt;}
+  .bpa-lbl{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:.1em;text-transform:uppercase;color:var(--ac);font-weight:600;margin-bottom:3mm;}
+  .bpa-grid{display:grid;grid-template-columns:1fr 1fr;gap:3mm;margin-bottom:4mm;}
+  .bpa-cell{border:.5pt solid #ddd;padding:3mm;min-height:16mm;}
+  .bpa-cell.full{grid-column:1/-1;}
+  .bpa-q{font-size:9pt;opacity:.6;margin-bottom:1mm;}
+  .bpa-sp{min-height:9mm;}
+  .bpb{margin:3mm 0;padding:3mm 4mm;border-left:2pt solid var(--ac);background:#fafafa;}
+  .bpb-lbl{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:.1em;text-transform:uppercase;color:var(--ac);font-weight:600;margin-bottom:2mm;}
+  .rec-opts{display:flex;gap:5pt;flex-wrap:wrap;margin-top:3mm;}
+  .rec-opts span{border:.5pt solid #aaa;padding:1.5pt 7pt;font-family:'IBM Plex Mono',monospace;font-size:8pt;}
+  .pres{margin-top:8mm;padding:4mm 5mm;border:1pt solid var(--ac);page-break-inside:avoid;}
+  .pres-lbl{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:.1em;text-transform:uppercase;color:var(--ac);font-weight:600;margin-bottom:3mm;}
+  .mats{margin-top:4mm;padding:3mm 4mm;border:.5pt dashed #aaa;}
+  .mats-lbl{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:.1em;text-transform:uppercase;opacity:.45;margin-bottom:2mm;}
+  .ml{display:flex;flex-wrap:wrap;gap:5pt;list-style:none;}
+  .ml li{font-size:9pt;padding:1.5pt 7pt;border:.5pt solid #bbb;background:#f5f5f5;}
+  /* Links */
+  .lk-title{font-family:'Fraunces',serif;font-size:20pt;font-weight:700;margin-bottom:2pt;}
+  .lk-rule{border:none;border-top:2pt solid var(--ac);margin:3pt 0 3pt;width:36pt;}
+  .lk-sub{font-family:'IBM Plex Mono',monospace;font-size:7.5pt;letter-spacing:.06em;opacity:.5;margin-bottom:7mm;padding-bottom:3mm;border-bottom:.5pt solid #ddd;}
+  .lk-item{margin-bottom:6mm;padding-bottom:6mm;border-bottom:.5pt solid #e8e8e8;page-break-inside:avoid;}
+  .lk-n{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:.1em;text-transform:uppercase;color:var(--ac);font-weight:600;margin-bottom:1.5pt;}
+  .lk-cov{font-family:'Fraunces',serif;font-size:12pt;font-weight:700;margin-bottom:2mm;}
+  .lk-det{font-size:10pt;margin-bottom:2mm;}
+  .lk-url{font-family:'IBM Plex Mono',monospace;font-size:8.5pt;color:var(--ac);}
+  .gn{margin-top:7mm;padding:4mm 5mm;border:.75pt solid var(--ac);}
+  .gn-lbl{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:.1em;text-transform:uppercase;color:var(--ac);font-weight:600;margin-bottom:2mm;}
   </style>`;
 }
 
-function rhead(brief,label){
-  return `<div class="rhead"><span><span class="ac">${brief.questId}</span> · ${brief.missionTitle.toUpperCase()}</span><span>${label.toUpperCase()}</span></div>`;
+function rh(brief, label) {
+  return `<div class="rh"><span><span class="i">${brief.questId}</span> · ${brief.missionTitle.toUpperCase()}</span><span>${label.toUpperCase()}</span></div>`;
 }
-function rfoot(brief){
-  return `<div class="rfoot"><span>Risers' Quests · Guide Use Only</span><span>${brief.questId}</span></div>`;
+function rf(brief) {
+  return `<div class="rf"><span>Risers' Quests · Guide Use Only</span><span>${brief.questId}</span></div>`;
 }
 
-function tplHook(brief,data){
-  const svg=WORLD_SVGS[ST.world]||'';
-  const lines=(data.hookLines||[]);
-  const linesHTML=lines.map((l,i)=>`<p class="hook-line${i===lines.length-1?' cta':''}">${l}</p>`).join('');
-  return pdfStyles(ac())+`<div class="pdf hook">
+function tplHook(brief, data) {
+  const svg = WORLD_SVGS[ST.world] || '';
+  const lines = data.hookLines || [];
+  const linesHTML = lines.map((l,i) => `<p class="h-line${i===lines.length-1?' cta':''}">${l}</p>`).join('');
+  return pdfCSS(ac()) + `<div class="pdf hook">
     <div class="hook-deco">${svg}</div>
-    <div class="hook-world-row">
-      <div class="hook-letter">${(ST.world||'')[0]}</div>
-      <div class="hook-world-stack">
-        <span class="hook-world-name">${(ST.world||'').toUpperCase().split('').join(' ')}</span>
-        <span class="hook-world-sub">${WORLDS.find(w=>w.key===ST.world)?.desc||''}</span>
+    <div class="hw-row">
+      <div class="hw-ltr">${(ST.world||'')[0]}</div>
+      <div class="hw-st">
+        <span class="hw-name">${(ST.world||'').toUpperCase().split('').join(' ')}</span>
+        <span class="hw-sub">${WORLDS.find(w=>w.key===ST.world)?.desc||''}</span>
       </div>
     </div>
-    <hr class="hook-rule"/>
-    <div class="hook-mission-lbl">MISSION</div>
-    <h1 class="hook-title">${brief.missionTitle}</h1>
+    <hr class="h-rule"/>
+    <div class="h-mlbl">MISSION</div>
+    <h1 class="h-title">${brief.missionTitle}</h1>
     <div>${linesHTML}</div>
-    <div class="hook-bottom">
-      <div><span class="hook-lbl">CORE SKILL</span><span class="hook-val">${ST.skill}</span></div>
-      <div><span class="hook-lbl">LEVEL</span><span class="hook-val">${ST.level}</span></div>
-      <div class="hook-qid">${brief.questId}</div>
+    <div class="h-bot">
+      <div><span class="h-lbl">CORE SKILL</span><span class="h-val">${ST.skill}</span></div>
+      <div><span class="h-lbl">LEVEL</span><span class="h-val">${ST.level}</span></div>
+      <div class="h-qid">${brief.questId}</div>
     </div>
   </div>`;
 }
 
-function tplPQC(brief,data){
-  const qs=(data.questions||[]).map(q=>{
-    if(q.type==='mcq'){
-      const opts=(q.options||[]).map(o=>`<div class="mcq-opt"><span class="mcq-box"></span><span>${o}</span></div>`).join('');
-      return `<div class="pq"><div class="pq-row"><span class="pq-num">${q.number}</span><span class="pq-text">${q.text}</span></div><div class="mcq-opts">${opts}</div></div>`;
+function tplPQC(brief, data) {
+  const qs = (data.questions || []).map(q => {
+    const num = q.n || q.number;
+    if (q.type === 'mcq') {
+      const opts = (q.opts || q.options || []).map(o => `<div class="mopt"><span class="mbox"></span><span>${o}</span></div>`).join('');
+      return `<div class="pq"><div class="pq-row"><span class="pq-num">${num}</span><span class="pq-text">${q.text}</span></div><div class="mopts">${opts}</div></div>`;
     }
-    return `<div class="pq"><div class="pq-row"><span class="pq-num">${q.number}</span><span class="pq-text">${q.text}</span></div><div class="work"><div class="work-lbl">Working</div><div class="wline"></div><div class="wline"></div><div class="ans-row"><span class="ans-lbl">My answer:</span><div class="ans-line"></div></div></div></div>`;
+    return `<div class="pq"><div class="pq-row"><span class="pq-num">${num}</span><span class="pq-text">${q.text}</span></div><div class="work"><div class="wlbl">Working</div><div class="wl"></div><div class="wl"></div><div class="ar"><span class="al">My answer:</span><div class="aline"></div></div></div></div>`;
   }).join('');
-  return pdfStyles(ac())+`<div class="pdf" style="min-height:267mm;display:flex;flex-direction:column;">
-    ${rhead(brief,'Pre-Quest Check')}
+  return pdfCSS(ac()) + `<div class="pdf" style="min-height:267mm;display:flex;flex-direction:column;">
+    ${rh(brief,'Pre-Quest Check')}
     <h2 class="pqc-title">Before You Begin</h2>
     <hr class="pqc-rule"/>
     <p class="pqc-sub">${ST.world} · ${brief.missionTitle} · ${ST.level}</p>
     <p class="pqc-intro">Five quick questions. No right or wrong way to feel about them — they're just here to help you figure out if now is the right moment for this quest.</p>
     ${qs}
-    <div class="gating">${data.gatingSuggestion||''}</div>
-    <div style="margin-top:auto;">${rfoot(brief)}</div>
+    <div class="gating">${data.gating || data.gatingSuggestion || ''}</div>
+    <div style="margin-top:auto;">${rf(brief)}</div>
   </div>`;
 }
 
-function tplArchives(brief,data){
-  const parts=(data.parts||[]).map(part=>{
-    const paras=(part.paragraphs||[]).map(p=>`<p>${p}</p>`).join('');
-    let tbl='';
-    if(part.table){
-      const ths=(part.table.headers||[]).map(h=>`<th>${h}</th>`).join('');
-      const trs=(part.table.rows||[]).map(r=>`<tr>${(r||[]).map(c=>`<td>${c}</td>`).join('')}</tr>`).join('');
-      tbl=`<table class="data-tbl"><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
-    }
-    return `<div><h3 class="part-title">${part.title}</h3>${paras}${tbl}</div>`;
-  }).join('');
-  return pdfStyles(ac())+`<div class="pdf arch">
-    ${rhead(brief,'The Archives')}
+function tplArchives(brief, data) {
+  const p1Paras = (data.p1Content||'').split('\n\n').filter(Boolean).map(p => `<p>${p}</p>`).join('');
+  const p2Paras = (data.p2Content||'').split('\n\n').filter(Boolean).map(p => `<p>${p}</p>`).join('');
+  let tbl = '';
+  if (data.hasTable && data.tableHeaders) {
+    const ths = (data.tableHeaders||[]).map(h=>`<th>${h}</th>`).join('');
+    const trs = (data.tableRows||[]).map(r=>`<tr>${(r||[]).map(c=>`<td>${c}</td>`).join('')}</tr>`).join('');
+    tbl = `<table class="dtbl"><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
+  }
+  return pdfCSS(ac()) + `<div class="pdf arch">
+    ${rh(brief,'The Archives')}
     <h2 class="arch-title">The Archives</h2>
     <hr class="arch-rule"/>
     <p class="arch-mission">Mission: ${brief.missionTitle}</p>
-    ${parts}
-    ${rfoot(brief)}
+    <h3 class="pt">${data.p1Title||'Part 1'}</h3>
+    <div>${p1Paras}</div>
+    ${tbl}
+    <h3 class="pt">${data.p2Title||'Part 2'}</h3>
+    <div>${p2Paras}</div>
+    ${rf(brief)}
   </div>`;
 }
 
-function tplQuestPack(brief,data){
-  const stages=(data.stages||[]).map(s=>{
-    let body='';
-    if(s.prompt)body+=`<div class="stage-prompt">${s.prompt}</div>`;
-    if(s.content)body+=`<p class="stage-content">${s.content}</p>`;
-    if(s.items)body+=`<ul class="stage-items">${(s.items||[]).map(i=>`<li>${i}</li>`).join('')}</ul>`;
-    if(s.partA){
-      const cells=(s.partA||[]).map((q,i)=>`<div class="bp-cell${i===4?' full':''}"><p class="bp-q">${q}</p><div class="bp-space"></div></div>`).join('');
-      body+=`<div><div class="bp-a-lbl">PART A · YOUR PREDICTION — Before you investigate, commit to what you think.</div><div class="bp-grid">${cells}</div></div>`;
-    }
-    if(s.partB){
-      body+=`<div class="bp-b"><div class="bp-b-lbl">PART B · YOUR RECORDING TOOL — Design it before ${brief.stage4Name} begins.</div><p class="stage-content">${s.partB}</p><div class="rec-opts"><span>Table</span><span>Tracker</span><span>Grid</span><span>Tree</span><span>Flowchart</span></div></div>`;
-    }
-    return `<div class="stage"><div class="stage-hdr"><div class="stage-l"><span class="stage-num">Stage ${s.number}</span><span class="stage-name">${s.name}</span></div><div class="stage-r">${s.day} · ${s.role}</div></div>${body}</div>`;
-  }).join('');
-  const mats=data.materials?`<div class="mats"><div class="mats-lbl">Materials</div><ul class="mats-list">${data.materials.map(m=>`<li>${m}</li>`).join('')}</ul></div>`:'';
-  return pdfStyles(ac())+`<div class="pdf">
-    ${rhead(brief,'Quest Pack')}
-    <div class="pack-meta"><b>Core Skill:</b> ${ST.skill}&nbsp;&nbsp;&nbsp;<b>Structure:</b> 3 Days · 6 Stages</div>
-    <div class="mission-lbl">THE MISSION</div>
-    <p class="mission-text">${data.mission||''}</p>
-    ${stages}
+function tplQuestPack(brief, data) {
+  function stg(num, name, day, role, body) {
+    return `<div class="stg"><div class="stg-hd"><div class="stg-l"><span class="stg-n">Stage ${num}</span><span class="stg-nm">${name}</span></div><div class="stg-r">${day} · ${role}</div></div>${body}</div>`;
+  }
+  function items(arr) {
+    if (!arr || !arr.length) return '';
+    return `<ul class="stg-items">${arr.map(i=>`<li>${i}</li>`).join('')}</ul>`;
+  }
+
+  const s1 = stg(1,'Deep Dive','Day 1','Research', `<p class="stg-cnt">${data.s1||''}</p>`);
+  const s2 = stg(2,'Brain Dump','Day 1','Thinking', `<div class="stg-prm">${data.s2Prompt||''}</div><p class="stg-cnt">${data.s2||''}</p>`);
+
+  const bpQs = (data.s3Questions||[]);
+  const cells = bpQs.map((q,i) => `<div class="bpa-cell${i===4?' full':''}"><p class="bpa-q">${q}</p><div class="bpa-sp"></div></div>`).join('');
+  const s3body = `<div><div class="bpa-lbl">PART A · YOUR PREDICTION — Before you investigate, commit to what you think.</div><div class="bpa-grid">${cells}</div></div><div class="bpb"><div class="bpb-lbl">PART B · YOUR RECORDING TOOL — Design it before ${brief.stage4Name} begins.</div><p class="stg-cnt">${data.s3PartB||''}</p><div class="rec-opts"><span>Table</span><span>Tracker</span><span>Grid</span><span>Tree</span><span>Flowchart</span></div></div>`;
+  const s3 = stg(3,'Blueprint','Day 2','Planning', s3body);
+
+  const s4 = stg(4, brief.stage4Name,'Day 2','Doing', `<p class="stg-cnt">${data.s4Intro||''}</p>${items(data.s4Steps)}`);
+  const s5 = stg(5,'What If','Day 3','Transfer', `<p class="stg-cnt">${data.s5||''}</p>`);
+  const s6 = stg(6,'Leave a Door Open','Day 3','Reflection', `<p class="stg-cnt">${data.s6||''}</p>`);
+
+  const mats = data.materials ? `<div class="mats"><div class="mats-lbl">Materials</div><ul class="ml">${data.materials.map(m=>`<li>${m}</li>`).join('')}</ul></div>` : '';
+
+  return pdfCSS(ac()) + `<div class="pdf">
+    ${rh(brief,'Quest Pack')}
+    <div class="pm"><b>Core Skill:</b> ${ST.skill}&nbsp;&nbsp;&nbsp;<b>Structure:</b> 3 Days · 6 Stages</div>
+    <div class="mlbl">THE MISSION</div>
+    <p class="mtext">${data.mission||''}</p>
+    ${s1}${s2}${s3}${s4}${s5}${s6}
     ${mats}
-    <div class="present"><div class="present-lbl">Present Your Case</div>${data.presentYourCase||''}</div>
-    ${rfoot(brief)}
+    <div class="pres"><div class="pres-lbl">Present Your Case</div>${data.present||data.presentYourCase||''}</div>
+    ${rf(brief)}
   </div>`;
 }
 
-function tplLinks(brief,data){
-  const links=(data.links||[]).map(l=>`<div class="link-item"><div class="link-num">Link ${String(l.number).padStart(2,'0')}</div><div class="link-covers">${l.covers}</div><p class="link-detail">${l.detail}</p><div class="link-url">${l.url}</div></div>`).join('');
-  return pdfStyles(ac())+`<div class="pdf">
-    ${rhead(brief,'Research Links')}
-    <h2 class="links-title">Research Links</h2>
-    <hr class="links-rule"/>
-    <p class="links-sub">${brief.questId} · ${brief.missionTitle} · For Guide Use — Send to Riser Before Day 1</p>
+function tplLinks(brief, data) {
+  const links = (data.links||[]).map(l => `<div class="lk-item"><div class="lk-n">Link ${String(l.n||l.number||1).padStart(2,'0')}</div><div class="lk-cov">${l.covers}</div><p class="lk-det">${l.detail}</p><div class="lk-url">${l.url}</div></div>`).join('');
+  return pdfCSS(ac()) + `<div class="pdf">
+    ${rh(brief,'Research Links')}
+    <h2 class="lk-title">Research Links</h2>
+    <hr class="lk-rule"/>
+    <p class="lk-sub">${brief.questId} · ${brief.missionTitle} · For Guide Use — Send to Riser Before Day 1</p>
     ${links}
-    <div class="guide-note"><div class="guide-note-lbl">Guide Note</div>${data.guideNote||''}</div>
-    ${rfoot(brief)}
+    <div class="gn"><div class="gn-lbl">Guide Note</div>${data.guideNote||''}</div>
+    ${rf(brief)}
   </div>`;
 }
 
-const TPLS={hook:tplHook,preQuestCheck:tplPQC,archives:tplArchives,questPack:tplQuestPack,links:tplLinks};
+const TPLS = { hook:tplHook, preQuestCheck:tplPQC, archives:tplArchives, questPack:tplQuestPack, links:tplLinks };
 
-/* ── PDF DOWNLOAD ── */
-async function dlPDF(key){
-  const btn=document.getElementById('dlbtn-'+key);
-  if(btn){btn.textContent='⏳ building…';btn.disabled=true;}
-  try{
-    const data=ST.sections[key];const brief=ST.brief;
-    if(!data||!brief)throw new Error('No data');
-    const html=TPLS[key](brief,data);
-    const zone=document.getElementById('pdfZone');
-    zone.innerHTML=html;
+/* ═══════════════════════════════
+   PDF DOWNLOAD
+═══════════════════════════════ */
+async function dlPDF(key) {
+  const btn = document.getElementById('dlbtn-'+key);
+  if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
+  try {
+    const data = ST.sections[key], brief = ST.brief;
+    if (!data || !brief) throw new Error('No data');
+    const zone = document.getElementById('pdfZone');
+    zone.innerHTML = TPLS[key](brief, data);
     await document.fonts.ready;
-    await new Promise(r=>setTimeout(r,500));
-    const fname=`${brief.questId}_${SECTION_LABELS[key].replace(/\s/g,'_')}.pdf`;
+    await sleep(600);
+    const el = zone.querySelector('.pdf');
+    if (!el) throw new Error('Template not found');
     await html2pdf().set({
-      margin:0,filename:fname,
-      image:{type:'jpeg',quality:0.98},
-      html2canvas:{scale:2,useCORS:true,letterRendering:true,logging:false},
-      jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
-      pagebreak:{mode:['avoid-all','css'],avoid:'.stage,.pq,.link-item'}
-    }).from(zone.querySelector('.pdf')).save();
-    zone.innerHTML='';
-  }catch(e){alert('PDF failed: '+e.message);}
-  if(btn){btn.textContent='↓ PDF';btn.disabled=false;}
+      margin: 0,
+      filename: `${brief.questId}_${SECTION_LABELS[key].replace(/\s/g,'_')}.pdf`,
+      image: { type:'jpeg', quality:0.98 },
+      html2canvas: { scale:2, useCORS:true, letterRendering:true, logging:false },
+      jsPDF: { unit:'mm', format:'a4', orientation:'portrait' },
+      pagebreak: { mode:['avoid-all','css'], avoid:'.stg,.pq,.lk-item' }
+    }).from(el).save();
+    zone.innerHTML = '';
+  } catch(e) { alert('PDF error: ' + e.message); }
+  if (btn) { btn.innerHTML = '↓ PDF'; btn.disabled = false; }
 }
 
-/* ── REOPEN ── */
-function reopenQuest(saved){
-  ST={world:saved.world,level:saved.level,skill:saved.skill,subject:null,lang:saved.lang||'',brief:saved.brief,sections:saved.sections};
-  const main=document.getElementById('mainArea');main.innerHTML='';
-  const seal=document.createElement('div');seal.className='quest-seal';
-  seal.innerHTML=`<div class="qid">${saved.brief.questId}</div><div class="qtitle">${saved.brief.missionTitle}</div>`;
-  main.appendChild(seal);
-  Object.keys(saved.sections).forEach(key=>{
-    const card=buildCard(key);main.appendChild(card);
-    document.getElementById('prev-'+key).textContent=sectionSummary(key,saved.sections[key]);
-    document.getElementById('tabr-'+key).innerHTML=`<button class="dl-btn" id="dlbtn-${key}" onclick="dlPDF('${key}')">↓ PDF</button><span class="sec-status">Ready</span>`;
-  });
-}
-
-document.getElementById('genBtn').onclick=generate;
-renderWorldGrid();renderLevelRow();renderSkillSelect();renderLangSelect();renderSavedList();
+/* ═══════════════════════════════
+   INIT
+═══════════════════════════════ */
+document.getElementById('genBtn').onclick = generate;
+renderWorldGrid(); renderLevelRow(); renderSkillSelect(); renderLangSelect(); renderSavedList();
 </script>
 </body>
 </html>
