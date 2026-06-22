@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Risers' Quests — Generator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;700;900&family=Source+Serif+4:opsz,wght@8..60,300;400;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* === APP UI === */
+:root{--paper:#EDE6D6;--card:#F8F4EA;--ink:#20242B;--stamp:#A23B33;--brass:#A9824A;--line:#C9BFA8;--line-soft:#DAD2BC;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Source Serif 4',serif;line-height:1.5;}
+h1,h2,h3{font-family:'Fraunces',serif;}
+.app{max-width:1280px;margin:0 auto;padding:28px 20px 80px;}
+.masthead{display:flex;align-items:baseline;justify-content:space-between;gap:16px;border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:26px;flex-wrap:wrap;}
+.masthead h1{font-size:clamp(24px,3.5vw,36px);margin:0;letter-spacing:-0.01em;}
+.masthead .tag{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;opacity:0.55;}
+.layout{display:grid;grid-template-columns:310px 1fr;gap:22px;align-items:start;}
+@media(max-width:820px){.layout{grid-template-columns:1fr;}}
+.sidebar{background:var(--card);border:1px solid var(--line);padding:18px;position:sticky;top:14px;}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--stamp);margin:0 0 3px;}
+.sidebar h2{font-size:17px;margin:0 0 14px;}
+label{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.65;margin:13px 0 5px;}
+select{width:100%;padding:8px 10px;font-family:'Source Serif 4',serif;font-size:14px;background:#fff;border:1px solid var(--line);color:var(--ink);}
+.world-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.world-btn{border:1px solid var(--line);background:#fff;padding:8px;text-align:left;cursor:pointer;}
+.world-btn b{display:block;font-family:'Fraunces',serif;font-size:13px;font-weight:700;margin-bottom:1px;}
+.world-btn small{font-family:'IBM Plex Mono',monospace;font-size:9px;opacity:0.55;}
+.world-btn[aria-pressed="true"]{border-color:var(--ink);background:var(--paper);box-shadow:inset 0 0 0 1px var(--ink);}
+.level-row{display:flex;flex-direction:column;gap:4px;}
+.level-btn{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);background:#fff;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;cursor:pointer;}
+.level-btn .desc{font-size:9px;opacity:0.5;}
+.level-btn[aria-pressed="true"]{border-color:var(--brass);background:#FBF3E3;}
+.gen-btn{width:100%;margin-top:16px;padding:12px;background:var(--stamp);color:#fff;border:none;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;cursor:pointer;}
+.gen-btn:disabled{opacity:0.4;cursor:not-allowed;}
+.hint{font-family:'IBM Plex Mono',monospace;font-size:10px;opacity:0.5;margin-top:7px;}
+.saved-section{margin-top:18px;border-top:1px dashed var(--line);padding-top:12px;}
+.saved-section h3{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;margin:0 0 8px;opacity:0.55;}
+.saved-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--line-soft);}
+.saved-item span{font-size:11px;}
+.saved-item button{background:none;border:none;color:var(--stamp);font-family:'IBM Plex Mono',monospace;font-size:10px;text-decoration:underline;cursor:pointer;padding:0;}
+.empty{font-family:'IBM Plex Mono',monospace;font-size:10px;opacity:0.45;}
+.main{min-height:400px;}
+.placeholder{border:1px dashed var(--line);padding:60px 20px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:0.4;}
+.quest-seal{background:var(--ink);color:var(--paper);padding:10px 16px;display:inline-block;margin-bottom:18px;}
+.quest-seal .qid{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;opacity:0.65;}
+.quest-seal .qtitle{font-family:'Fraunces',serif;font-size:17px;font-weight:700;margin-top:2px;}
+.sec-card{background:var(--card);border:1px solid var(--line);margin-bottom:14px;}
+.sec-tab{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 14px;background:var(--ink);color:var(--paper);cursor:pointer;user-select:none;}
+.sec-tab h3{margin:0;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;letter-spacing:0.04em;}
+.sec-tab-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.sec-status{font-family:'IBM Plex Mono',monospace;font-size:10px;opacity:0.75;}
+.dl-btn{background:none;border:1px solid rgba(255,255,255,0.35);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10px;padding:3px 9px;cursor:pointer;white-space:nowrap;}
+.dl-btn:hover{background:rgba(255,255,255,0.12);}
+.dl-btn:disabled{opacity:0.4;cursor:default;}
+.sec-preview{padding:14px 18px;max-height:260px;overflow-y:auto;font-size:13.5px;line-height:1.65;white-space:pre-wrap;border-top:1px solid rgba(255,255,255,0.05);}
+.sec-preview.closed{display:none;}
+.pulse{display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 1s infinite ease-in-out;}
+@keyframes pulse{0%,100%{opacity:0.2;}50%{opacity:1;}}
+.err{color:var(--stamp);font-family:'IBM Plex Mono',monospace;font-size:11px;}
+
+/* === PDF TEMPLATES === */
+/* These target elements rendered in the hidden zone and converted to PDF */
+.pdf{font-family:'Source Serif 4',serif;color:#111;background:#fff;width:210mm;padding:16mm 18mm 14mm;font-size:10.5pt;line-height:1.6;position:relative;}
+.pdf-rhead{font-family:'IBM Plex Mono',monospace;font-size:6.5pt;letter-spacing:0.08em;text-transform:uppercase;border-bottom:0.5pt solid #111;padding-bottom:3pt;margin-bottom:11mm;display:flex;justify-content:space-between;}
+.pdf-foot{font-family:'IBM Plex Mono',monospace;font-size:6.5pt;letter-spacing:0.06em;text-transform:uppercase;border-top:0.5pt solid #111;padding-top:3pt;margin-top:12mm;display:flex;justify-content:space-between;}
+
+/* Hook Card */
+.pdf-hook{min-height:267mm;display:flex;flex-direction:column;position:relative;}
+.pdf-hook-deco{position:absolute;top:0;right:0;opacity:0.18;}
+.pdf-hook-world-row{display:flex;align-items:flex-end;gap:12pt;margin-bottom:16mm;}
+.pdf-hook-letter{font-family:'Fraunces',serif;font-size:78pt;font-weight:900;line-height:1;letter-spacing:-0.03em;}
+.pdf-hook-world-stack{padding-bottom:6pt;}
+.pdf-hook-world-name{font-family:'IBM Plex Mono',monospace;font-size:9.5pt;letter-spacing:0.22em;text-transform:uppercase;display:block;}
+.pdf-hook-world-sub{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:0.1em;opacity:0.5;display:block;margin-top:2pt;}
+.pdf-hook-mission-lbl{font-family:'IBM Plex Mono',monospace;font-size:7.5pt;letter-spacing:0.18em;text-transform:uppercase;opacity:0.5;margin-bottom:3pt;}
+.pdf-hook-title{font-family:'Fraunces',serif;font-size:30pt;font-weight:900;line-height:1.08;letter-spacing:-0.01em;margin:0 0 10mm;}
+.pdf-hook-line{font-family:'Fraunces',serif;font-size:13.5pt;font-weight:300;line-height:1.45;margin:0 0 4pt;}
+.pdf-hook-line.cta{font-weight:700;margin-top:7mm;}
+.pdf-hook-bottom{margin-top:auto;padding-top:8mm;border-top:0.5pt solid #111;display:flex;justify-content:space-between;align-items:flex-end;}
+.pdf-hook-lbl{font-family:'IBM Plex Mono',monospace;font-size:6.5pt;letter-spacing:0.12em;text-transform:uppercase;opacity:0.5;display:block;margin-bottom:2pt;}
+.pdf-hook-val{font-family:'Fraunces',serif;font-size:11pt;font-weight:700;}
+.pdf-hook-qid{font-family:'IBM Plex Mono',monospace;font-size:8pt;opacity:0.45;}
+
+/* Pre-Quest Check */
+.pdf-pqc-title{font-family:'Fraunces',serif;font-size:22pt;font-weight:700;margin:0 0 2pt;}
+.pdf-pqc-sub{font-family:'IBM Plex Mono',monospace;font-size:8pt;letter-spacing:0.04em;opacity:0.6;margin-bottom:7mm;}
+.pdf-pqc-intro{font-style:italic;font-size:10pt;margin-bottom:7mm;padding-bottom:3mm;border-bottom:0.5pt solid #ccc;}
+.pdf-q{margin-bottom:7mm;page-break-inside:avoid;}
+.pdf-q-row{display:flex;gap:8pt;align-items:baseline;}
+.pdf-q-num{font-family:'IBM Plex Mono',monospace;font-size:7.5pt;font-weight:600;min-width:14pt;opacity:0.6;}
+.pdf-q-text{font-size:10.5pt;flex:1;}
+.pdf-mcq-opts{display:grid;grid-template-columns:1fr 1fr;gap:3pt 14pt;margin:4pt 0 0 22pt;}
+.pdf-opt{display:flex;align-items:baseline;gap:5pt;font-size:9.5pt;}
+.pdf-box{width:9pt;height:9pt;border:0.75pt solid #111;display:inline-block;flex-shrink:0;}
+.pdf-work{margin:4pt 0 0 22pt;}
+.pdf-work-lbl{font-family:'IBM Plex Mono',monospace;font-size:6.5pt;letter-spacing:0.08em;text-transform:uppercase;opacity:0.45;margin-bottom:1pt;}
+.pdf-line{border-bottom:0.5pt solid #bbb;height:7mm;width:100%;display:block;margin-bottom:2pt;}
+.pdf-ans-row{display:flex;gap:10pt;align-items:flex-end;}
+.pdf-ans-lbl{font-family:'IBM Plex Mono',monospace;font-size:6.5pt;letter-spacing:0.06em;text-transform:uppercase;opacity:0.45;white-space:nowrap;}
+.pdf-ans-line{flex:1;border-bottom:0.75pt solid #111;height:5mm;}
+.pdf-gating{margin-top:7mm;padding:3.5mm 4.5mm;border:0.75pt solid #111;font-size:9.5pt;line-height:1.55;}
+
+/* Archives */
+.pdf-arch-title{font-family:'Fraunces',serif;font-size:26pt;font-weight:300;margin:0 0 2pt;}
+.pdf-arch-mission{font-size:11pt;font-style:italic;opacity:0.6;margin-bottom:9mm;padding-bottom:3mm;border-bottom:0.5pt solid #ccc;}
+.pdf-part-title{font-family:'Fraunces',serif;font-size:13pt;font-weight:700;margin:7mm 0 3mm;padding-top:3mm;}
+.pdf p{margin:0 0 3.5mm;font-size:10.5pt;}
+.pdf-tbl{width:100%;border-collapse:collapse;margin:4mm 0;font-size:9.5pt;}
+.pdf-tbl th{font-family:'IBM Plex Mono',monospace;font-size:7.5pt;letter-spacing:0.06em;text-transform:uppercase;text-align:left;padding:2.5mm 3mm;border-bottom:1pt solid #111;border-top:1pt solid #111;}
+.pdf-tbl td{padding:2mm 3mm;border-bottom:0.5pt solid #ddd;vertical-align:top;}
+
+/* Quest Pack */
+.pdf-pack-meta{font-family:'IBM Plex Mono',monospace;font-size:7.5pt;letter-spacing:0.05em;opacity:0.6;margin-bottom:5mm;}
+.pdf-pack-meta b{opacity:1;font-weight:600;}
+.pdf-mission-lbl{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:0.16em;text-transform:uppercase;opacity:0.45;margin-bottom:1pt;}
+.pdf-mission-text{font-size:10.5pt;margin-bottom:9mm;padding-bottom:4mm;border-bottom:1pt solid #111;}
+.pdf-stage{margin-bottom:7mm;page-break-inside:avoid;}
+.pdf-stage-hdr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2.5mm;padding-bottom:2mm;border-bottom:0.5pt solid #111;}
+.pdf-stage-l{display:flex;align-items:baseline;gap:8pt;}
+.pdf-stage-num{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:0.1em;text-transform:uppercase;opacity:0.45;}
+.pdf-stage-name{font-family:'Fraunces',serif;font-size:13.5pt;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;}
+.pdf-stage-r{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:0.06em;text-transform:uppercase;opacity:0.45;text-align:right;}
+.pdf-stage-prompt{font-family:'Fraunces',serif;font-size:11pt;font-style:italic;font-weight:300;margin:0 0 2.5mm;}
+.pdf-stage-content{font-size:10.5pt;margin:0 0 2.5mm;}
+.pdf-items{margin:2.5mm 0;padding:0;list-style:none;}
+.pdf-items li{font-size:10pt;padding:1.5mm 0 1.5mm 13pt;border-bottom:0.5pt solid #eee;position:relative;}
+.pdf-items li::before{content:'→';position:absolute;left:0;opacity:0.4;font-size:9pt;}
+.pdf-bp-a-lbl{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:0.1em;text-transform:uppercase;opacity:0.5;margin-bottom:2.5mm;}
+.pdf-bp-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5mm;margin-bottom:3mm;}
+.pdf-bp-cell{border:0.5pt solid #ccc;padding:2.5mm;min-height:16mm;}
+.pdf-bp-cell.full{grid-column:1/-1;}
+.pdf-bp-q{font-size:9pt;opacity:0.65;margin-bottom:1mm;}
+.pdf-bp-space{min-height:9mm;}
+.pdf-bp-b{margin:3mm 0;padding:2.5mm 3.5mm;border-left:1.5pt solid #111;}
+.pdf-bp-b-lbl{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:0.1em;text-transform:uppercase;opacity:0.5;margin-bottom:2mm;}
+.pdf-record-opts{display:flex;gap:6pt;flex-wrap:wrap;margin-top:3mm;}
+.pdf-record-opts span{border:0.5pt solid #999;padding:1pt 6pt;font-family:'IBM Plex Mono',monospace;font-size:8pt;}
+.pdf-present{margin-top:7mm;padding:3.5mm 4.5mm;border:0.75pt solid #111;page-break-inside:avoid;}
+.pdf-present-lbl{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;margin-bottom:2mm;}
+.pdf-materials{margin-top:4mm;padding:2.5mm 4mm;border:0.5pt dashed #888;}
+.pdf-materials-lbl{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:0.1em;text-transform:uppercase;opacity:0.5;margin-bottom:2mm;}
+.pdf-mat-list{display:flex;flex-wrap:wrap;gap:5pt;list-style:none;padding:0;margin:0;}
+.pdf-mat-list li{font-size:9pt;padding:1pt 6pt;border:0.5pt solid #999;}
+
+/* Links */
+.pdf-links-title{font-family:'Fraunces',serif;font-size:20pt;font-weight:700;margin:0 0 2pt;}
+.pdf-links-sub{font-family:'IBM Plex Mono',monospace;font-size:7.5pt;letter-spacing:0.06em;opacity:0.55;margin-bottom:7mm;padding-bottom:3mm;border-bottom:0.5pt solid #111;}
+.pdf-link{margin-bottom:5mm;padding-bottom:5mm;border-bottom:0.5pt solid #ddd;page-break-inside:avoid;}
+.pdf-link-num{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:0.1em;text-transform:uppercase;opacity:0.45;margin-bottom:1pt;}
+.pdf-link-covers{font-family:'Fraunces',serif;font-size:12pt;font-weight:700;margin-bottom:1.5mm;}
+.pdf-link-detail{font-size:10pt;margin-bottom:1.5mm;}
+.pdf-link-url{font-family:'IBM Plex Mono',monospace;font-size:8.5pt;}
+.pdf-guide-note{margin-top:7mm;padding:3.5mm 4.5mm;border:0.75pt solid #111;}
+.pdf-guide-note-lbl{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;margin-bottom:2mm;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="masthead">
+    <h1>Risers' Quests</h1>
+    <div class="tag">Quest Generator · Guide Use Only</div>
+  </div>
+  <div class="layout">
+    <div class="sidebar">
+      <p class="eyebrow">New Quest</p>
+      <h2>Request Form</h2>
+      <label>World</label>
+      <div class="world-grid" id="worldGrid"></div>
+      <label>Level</label>
+      <div class="level-row" id="levelRow"></div>
+      <label for="skillSel">Core Skill</label>
+      <select id="skillSel"></select>
+      <label for="langSel">Language Skill (optional)</label>
+      <select id="langSel"></select>
+      <button class="gen-btn" id="genBtn" disabled>Generate Quest</button>
+      <p class="hint" id="hint">Pick a World, a Level, and a Core Skill.</p>
+      <div class="saved-section">
+        <h3>Archived Quests</h3>
+        <div id="savedList"><p class="empty">None yet.</p></div>
+      </div>
+    </div>
+    <div class="main" id="mainArea">
+      <div class="placeholder">Select inputs and generate a Quest to begin.</div>
+    </div>
+  </div>
+</div>
+
+<div id="pdfZone" style="position:fixed;left:-99999px;top:0;width:794px;background:#fff;"></div>
+
+<script>
+'use strict';
+
+const WORLDS=[
+  {key:'Fantasy',letter:'F',desc:"A world that doesn't exist"},
+  {key:'Adventure',letter:'A',desc:'A real-world crisis to solve'},
+  {key:'Mystery',letter:'M',desc:'The science behind real events'},
+  {key:'Drama',letter:'D',desc:'Debate, art, or performance'},
+];
+const LEVELS=[
+  {key:'Wanderer',desc:'most guided'},
+  {key:'Seeker',desc:'some open decisions'},
+  {key:'Explorer',desc:'self-directed'},
+  {key:'Pathfinder',desc:'fully open'},
+];
+const MATH_SKILLS=['Number Sense & Operations','Number Fluency & Fact Mastery','Decimals','Fractions','Fractions, Decimals, Percentages','Integers (Positive & Negative Numbers)','Ratios & Proportions','Powers, Squares, Cubes','Algebra Foundations'];
+const SCIENCE_SKILLS=['Characteristics of Living Things','Plant Structure and Function','Basic Food Chains','Pollination and Seed Dispersal','Adaptations in Animals and Plants','States of Matter','Properties of Materials','Physical Changes','Mixtures','Push and Pull Forces','Gravity','Heat and Temperature','Simple Machines','Sound: Pitch and Volume','Light Reflection','Weather Patterns','Water Cycle','Solar System Basics','Rocks and Minerals','Moon Phases','Natural Disasters','Cell Structure and Function','Digestive System','Respiratory System','Photosynthesis','Ecosystems','Chemical and Physical Changes','Elements, Compounds, Mixtures','Solutions','Acids and Bases','Speed and Motion','Friction','Kinetic and Potential Energy','Electric Circuits','Reflection and Refraction','Properties of Waves','Magnets and Electromagnets','Rock Cycle','Atmosphere','Climate Zones','Earthquakes and Volcanoes','Circulatory System','Nervous System','Immune System','DNA and Genes','Inheritance and Traits','Variation in Species','Pollution and Climate Change','Chemical Reactions','pH Scale','Balancing Equations','Neutralization','Exothermic and Endothermic Reactions','Velocity and Acceleration',"Newton's Laws of Motion",'Conservation of Energy','Current, Voltage, Resistance','Electromagnetic Spectrum Basics','Climate Change','Advanced Weather Systems'];
+const LANG_SKILLS=['Reading Skills & Strategies','Text Analysis & Evidence','Research & Informational Reading','Digital Literacy & Communication','Writing Process','Grammar, Style & Vocabulary','Performance & Oral Expression','Sentence Structure','Story Structure','Narrative Elements','Discussion & Debate'];
+
+const WORLD_SVGS={
+  Mystery:`<svg width="52" height="52" viewBox="0 0 52 52" fill="none" stroke="#000" stroke-width="1.4" stroke-linecap="round"><circle cx="22" cy="22" r="15"/><line x1="33" y1="33" x2="48" y2="48" stroke-width="2.5"/><line x1="22" y1="14" x2="22" y2="30" stroke-width="1"/><circle cx="22" cy="34" r="1.5" fill="#000" stroke="none"/></svg>`,
+  Fantasy:`<svg width="52" height="52" viewBox="0 0 52 52" fill="none" stroke="#000" stroke-width="1.4"><path d="M32 6 A18 18 0 1 0 32 44 A13 13 0 1 1 32 6Z"/><circle cx="44" cy="10" r="2" fill="#000" stroke="none"/><circle cx="48" cy="22" r="1.5" fill="#000" stroke="none"/><circle cx="46" cy="4" r="1.5" fill="#000" stroke="none"/></svg>`,
+  Adventure:`<svg width="52" height="52" viewBox="0 0 52 52" fill="none" stroke="#000" stroke-width="1.4"><circle cx="26" cy="26" r="20"/><polygon points="26,8 29,25 26,22 23,25" fill="#000" stroke="none"/><polygon points="26,44 29,27 26,30 23,27" fill="none" stroke="#000" stroke-width="1"/><line x1="6" y1="26" x2="46" y2="26" stroke-width="0.8"/><line x1="26" y1="6" x2="26" y2="46" stroke-width="0.8"/></svg>`,
+  Drama:`<svg width="56" height="44" viewBox="0 0 56 44" fill="none" stroke="#000" stroke-width="1.4" stroke-linecap="round"><ellipse cx="17" cy="20" rx="13" ry="15"/><circle cx="11" cy="16" r="2" fill="#000" stroke="none"/><circle cx="23" cy="16" r="2" fill="#000" stroke="none"/><path d="M11 26 Q17 34 23 26"/><ellipse cx="39" cy="23" rx="13" ry="15"/><circle cx="33" cy="19" r="2" fill="#000" stroke="none"/><circle cx="45" cy="19" r="2" fill="#000" stroke="none"/><path d="M33 31 Q39 23 45 31"/></svg>`,
+};
+
+const SECTION_ORDER=['hook','preQuestCheck','archives','links','questPack'];
+const SECTION_LABELS={hook:'Hook Card',preQuestCheck:'Pre-Quest Check',archives:'Archives',links:'Links',questPack:'Quest Pack'};
+const SECTION_TOKENS={hook:500,preQuestCheck:1400,archives:3800,questPack:5000,links:800};
+
+let ST={world:null,level:null,skill:null,subject:null,lang:'',brief:null,sections:{}};
+let qCount=parseInt(localStorage.getItem('rq_count')||'0');
+
+const SPEC=`You are the generation engine for "Risers' Quests" — a program where children aged 8-14 complete 3-day hands-on projects (Quests) at school, guided by an adult Guide. Generate Quest documents strictly as JSON following the rules below.
+
+LEVELS (self-direction increases as you go down):
+- Wanderer: Explicit, step-by-step. Written entirely for a child to follow alone with no adult. Every instruction is clear and leaves nothing ambiguous. Vocabulary: a confident 8-year-old.
+- Seeker: Clear steps with some open decisions. Can handle mild ambiguity. Vocabulary: 10-year-old. Sentences short and concrete.
+- Explorer: Loose prompts only. Riser figures out the path themselves. Can handle open-ended tasks.
+- Pathfinder: Minimal scaffolding. Fully open. Assumes high confidence.
+
+WORLDS: Fantasy (world that doesn't exist; real science separates fact from fiction), Adventure (real-world crisis at a scale the Riser can respond to), Mystery (the scientific explanation behind real events/phenomena), Drama (scientific or philosophical thinking applied to debate, art, or performance).
+
+HOOK CARD RULES (most important — read carefully):
+1. PREMISE: The Riser IS the person in the situation. Never a bystander. Always second person, present tense. Create an extraordinary, specific premise the Riser has been dropped into. NOT "a scientist discovered something" — instead "You are the scientist. You discovered it twenty minutes ago. Nobody else knows yet." Think: unusual perspective, high personal stakes, something impossible or urgent happening RIGHT NOW to the Riser.
+2. FORMAT: Short lines, not paragraphs. No sentences longer than 12 words. 4-6 lines total. Escalating tension. Final line: a short imperative, 5 words or fewer.
+3. CLARITY FOR SEEKERS/WANDERERS: Use only words a 9-year-old reads easily. Concrete. Sensory. "The bridge cracked last night" not "The structural integrity was compromised." The Riser must immediately feel the situation, not decode it.
+4. NEVER use these words in hook lines: quest, mission, task, challenge, learn, skill, study, science, maths, investigate.
+
+SIX STAGES (Quest Pack, always 3 Days):
+Stage 1 — Deep Dive (Day 1, Research): read Archives.
+Stage 2 — Brain Dump (Day 1, Thinking): free processing; Riser picks format: Mind Map / List / Sketch / Connect / Write.
+Stage 3 — Blueprint (Day 2, Planning): Part A = 5 prediction questions to commit to before investigating; Part B = design a recording tool before Stage 4 (Table / Tracker / Grid / Tree / Flowchart).
+Stage 4 — "Experiment Zero" if Science skill, "Data Analysis" if Math skill (Day 2, Doing): step-by-step work, then compare conclusion to Stage 3 prediction.
+Stage 5 — What If (Day 3, Transfer): un-researchable twist requiring reasoning from the evidence, not lookup. No single right answer.
+Stage 6 — Leave a Door Open (Day 3, Reflection): Riser writes ONE genuinely new question.
+Close with Present Your Case — leave presentation open for Guide to facilitate.
+
+ARCHIVES: Riser-facing reading for Stage 1. Narrative, not textbook. Part 1: real historical anchor story + interesting tangential facts + core content knowledge. Part 2: mission setup that hands the Riser the specific data/problem. If requiresLinks=true (Explorer level only): stop short of one technique, write "What changes — and how — is something the Archives doesn't tell you." If requiresLinks=false: Archives must give EVERYTHING needed. End always: "Something in here matters for what comes next. You decide what."
+
+LINKS (Explorer only, when needed): Real URLs only — mathsisfun.com, bbc.co.uk/bitesize, khanacademy.org, nasa.gov. Max 2. Never invent URLs.
+
+PRE-QUEST CHECK: 5 questions, self-administered, no answer key. Q1=MCQ testing the core concept. Q2-Q5=short answer with working space, escalating difficulty. Q5=quietly isomorphic to the Quest's real mechanic (same thinking pattern, different surface context). Closing guidance names the SPECIFIC gating questions.
+
+LANGUAGE: Never standalone. Woven organically into Brain Dump, Blueprint, Stage 4 conclusion, Stage 6. If a Language Skill is given, deliberately target it in relevant stages.
+
+BRAND: "Risers' Quests". Quest ID = World-letter + 2-digit number. Label "Level" not "Difficulty". Never print Subject, Format, Track, or Academic.`;
+
+function ctx(){return `World: ${ST.world}\nLevel: ${ST.level}\nCore Skill: ${ST.skill}\nSubject: ${ST.subject}\nLanguage Skill: ${ST.lang||'none — integrate organically'}`;}
+
+async function callAPI(system,user,maxTokens=1500){
+  const r=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system,user,maxTokens})});
+  const d=await r.json();
+  if(!r.ok) throw new Error(d.error||`HTTP ${r.status}`);
+  return d.text;
+}
+
+function parseJ(raw){return JSON.parse(raw.replace(/```json|```/g,'').trim());}
+
+const PROMPTS={
+  brief:()=>`${ctx()}\nQuest number for ID: ${qCount+1}\n\nReturn ONLY this JSON:\n{"questId":"${WORLDS.find(w=>w.key===ST.world).letter}-${String(qCount+1).padStart(2,'0')}","missionTitle":"string","stage4Name":"Experiment Zero or Data Analysis","requiresLinks":false,"linkGapDescription":null}\n\nrequiresLinks=true ONLY if Level is Explorer AND a genuine procedural gap is essential to leave.`,
+
+  hook:(b)=>`${ctx()}\nQuest ID: ${b.questId}\nMission: ${b.missionTitle}\n\nReturn ONLY this JSON:\n{"hookLines":["line 1","line 2","line 3","line 4","short imperative."]}\n\nSTRICT:\n- 4-6 lines. Last line is imperative (5 words max, verb-first).\n- Second person present tense. Riser IS in the situation.\n- Extraordinary premise. Something impossible or urgent happening to YOU right now.\n- Wanderer/Seeker: every word understood by a 9-year-old. Short. Concrete. Sensory.\n- Never: quest mission task challenge learn skill science maths investigate.`,
+
+  preQuestCheck:(b)=>`${ctx()}\nQuest ID: ${b.questId}\nMission: ${b.missionTitle}\n\nReturn ONLY this JSON:\n{"questions":[{"number":1,"type":"mcq","text":"...","options":["A","B","C","D"]},{"number":2,"type":"short","text":"..."},{"number":3,"type":"short","text":"..."},{"number":4,"type":"short","text":"..."},{"number":5,"type":"short","text":"..."}],"gatingQs":[3,4],"gatingSuggestion":"If Q3 and Q4 felt shaky — find a different quest for now and come back. If Q3 and Q4 were fine — give this a go, it will stretch you. If all five felt comfortable — you're ready."}\n\nQ1: MCQ testing the core concept. Q2-Q4: applied short answer, escalating. Q5: isomorphic to Quest mechanic (same reasoning, different context, does not reveal mission). No answer key.`,
+
+  archives:(b)=>`${ctx()}\nQuest ID: ${b.questId}\nMission: ${b.missionTitle}\nRequires procedural gap: ${b.requiresLinks}\nGap: ${b.linkGapDescription||'none'}\n\nReturn ONLY this JSON:\n{"parts":[{"title":"Part 1: Title","paragraphs":["para","para","para"],"table":null},{"title":"Part 2: Title","paragraphs":["para","para"],"table":{"headers":["Col1","Col2","Col3"],"rows":[["cell","cell","cell"]]}}]}\n\ntable=null if no table needed. Final paragraph of last part must be: "Something in here matters for what comes next. You decide what." Write narratively for the Riser, not as a textbook. Include real history, surprising facts, and the core knowledge. If requiresLinks=false: give ALL techniques needed to complete the Quest.`,
+
+  questPack:(b)=>`${ctx()}\nQuest ID: ${b.questId}\nMission: ${b.missionTitle}\nStage 4 name: ${b.stage4Name}\n\nReturn ONLY this JSON:\n{"mission":"2-3 sentence mission text","stages":[{"number":1,"name":"Deep Dive","day":"Day 1","role":"Research","content":"instruction","prompt":null,"items":null,"partA":null,"partB":null},{"number":2,"name":"Brain Dump","day":"Day 1","role":"Thinking","content":"instruction","prompt":"quoted prompt shown to Riser","items":null,"partA":null,"partB":null},{"number":3,"name":"Blueprint","day":"Day 2","role":"Planning","content":null,"prompt":null,"items":null,"partA":["Q1?","Q2?","Q3?","Q4?","Q5?"],"partB":"Part B instruction"},{"number":4,"name":"${b.stage4Name}","day":"Day 2","role":"Doing","content":"opening instruction","prompt":null,"items":["step1","step2","step3","step4","step5","compare to prediction instruction"],"partA":null,"partB":null},{"number":5,"name":"What If","day":"Day 3","role":"Transfer","content":"full what if scenario","prompt":null,"items":null,"partA":null,"partB":null},{"number":6,"name":"Leave a Door Open","day":"Day 3","role":"Reflection","content":"instruction","prompt":null,"items":null,"partA":null,"partB":null}],"presentYourCase":"text","materials":null}\n\nPrescriptiveness MUST match Level: Wanderer=numbered explicit steps a child can follow alone; Seeker=clear steps with some open choices; Explorer=loose prompts; Pathfinder=minimal scaffolding. materials=null unless physically hands-on.`,
+
+  links:(b)=>`${ctx()}\nQuest ID: ${b.questId}\nMission: ${b.missionTitle}\nGap to fill: ${b.linkGapDescription}\n\nReturn ONLY this JSON:\n{"links":[{"number":1,"covers":"short description max 10 words","detail":"when to use and what Riser finds","url":"https://real.stable.url.com"}],"guideNote":"Guide instructions"}\n\nReal stable URLs only: mathsisfun.com, bbc.co.uk/bitesize, khanacademy.org, nasa.gov. Max 2 links. Never invent URLs. guideNote must say: send before Day 1, only after Archives are read.`,
+};
+
+/* === UI === */
+function renderWorldGrid(){
+  const g=document.getElementById('worldGrid'); g.innerHTML='';
+  WORLDS.forEach(w=>{
+    const b=document.createElement('button'); b.className='world-btn'; b.type='button';
+    b.setAttribute('aria-pressed',ST.world===w.key);
+    b.innerHTML=`<b>${w.key}</b><small>${w.desc}</small>`;
+    b.onclick=()=>{ST.world=w.key;renderWorldGrid();checkReady();};
+    g.appendChild(b);
+  });
+}
+function renderLevelRow(){
+  const r=document.getElementById('levelRow'); r.innerHTML='';
+  LEVELS.forEach(l=>{
+    const b=document.createElement('button'); b.className='level-btn'; b.type='button';
+    b.setAttribute('aria-pressed',ST.level===l.key);
+    b.innerHTML=`<span>${l.key}</span><span class="desc">${l.desc}</span>`;
+    b.onclick=()=>{ST.level=l.key;renderLevelRow();checkReady();};
+    r.appendChild(b);
+  });
+}
+function renderSkillSelect(){
+  const s=document.getElementById('skillSel');
+  s.innerHTML='<option value="">— choose a Core Skill —</option>';
+  const mg=document.createElement('optgroup'); mg.label='Math';
+  MATH_SKILLS.forEach(sk=>{const o=document.createElement('option');o.value='math|'+sk;o.textContent=sk;mg.appendChild(o);});
+  const sg=document.createElement('optgroup'); sg.label='Science';
+  SCIENCE_SKILLS.forEach(sk=>{const o=document.createElement('option');o.value='science|'+sk;o.textContent=sk;sg.appendChild(o);});
+  s.appendChild(mg); s.appendChild(sg);
+  s.onchange=()=>{if(!s.value){ST.skill=null;ST.subject=null;}else{const[sub,nm]=s.value.split('|');ST.subject=sub;ST.skill=nm;}checkReady();};
+}
+function renderLangSelect(){
+  const s=document.getElementById('langSel');
+  s.innerHTML='<option value="">— integrate organically (default) —</option>';
+  LANG_SKILLS.forEach(sk=>{const o=document.createElement('option');o.value=sk;o.textContent=sk;s.appendChild(o);});
+  s.onchange=()=>{ST.lang=s.value;};
+}
+function checkReady(){
+  const ok=ST.world&&ST.level&&ST.skill;
+  document.getElementById('genBtn').disabled=!ok;
+  document.getElementById('hint').textContent=ok?`Ready: ${ST.world} · ${ST.level} · ${ST.skill}`:'Pick a World, a Level, and a Core Skill.';
+}
+function renderSavedList(){
+  const el=document.getElementById('savedList');
+  const keys=Object.keys(localStorage).filter(k=>k.startsWith('rq:'));
+  if(!keys.length){el.innerHTML='<p class="empty">None yet.</p>';return;}
+  el.innerHTML='';
+  keys.sort().reverse().forEach(k=>{
+    try{
+      const d=JSON.parse(localStorage.getItem(k));
+      const row=document.createElement('div'); row.className='saved-item';
+      const sp=document.createElement('span'); sp.innerHTML=`<b>${d.brief.questId}</b> ${d.brief.missionTitle}`;
+      const btn=document.createElement('button'); btn.textContent='Open';
+      btn.onclick=()=>reopenQuest(d);
+      row.appendChild(sp); row.appendChild(btn); el.appendChild(row);
+    }catch(e){}
+  });
+}
+
+/* === GENERATE === */
+async function generate(){
+  document.getElementById('genBtn').disabled=true;
+  ST.sections={}; ST.brief=null;
+  const main=document.getElementById('mainArea');
+  main.innerHTML='<div class="placeholder"><span class="pulse"></span> Drafting mission brief…</div>';
+  let brief;
+  try{
+    const raw=await callAPI(SPEC+'\n\nRespond ONLY with valid JSON. No preamble, no markdown fences.',PROMPTS.brief(),400);
+    brief=parseJ(raw);
+    if(ST.level!=='Explorer') brief.requiresLinks=false;
+    ST.brief=brief; qCount++; localStorage.setItem('rq_count',qCount);
+  }catch(e){
+    main.innerHTML=`<p class="err">Brief failed — ${e.message}. <button onclick="generate()">Retry</button></p>`;
+    document.getElementById('genBtn').disabled=false; return;
+  }
+  main.innerHTML='';
+  const seal=document.createElement('div'); seal.className='quest-seal';
+  seal.innerHTML=`<div class="qid">${brief.questId}</div><div class="qtitle">${brief.missionTitle}</div>`;
+  main.appendChild(seal);
+  const secs=SECTION_ORDER.filter(s=>s!=='links'||brief.requiresLinks);
+  secs.forEach(key=>main.appendChild(buildCard(key)));
+  await Promise.all(secs.map(key=>genSection(key,brief)));
+  localStorage.setItem('rq:'+brief.questId,JSON.stringify({brief,world:ST.world,level:ST.level,skill:ST.skill,lang:ST.lang,sections:ST.sections}));
+  renderSavedList();
+  document.getElementById('genBtn').disabled=false;
+}
+
+function buildCard(key){
+  const card=document.createElement('div'); card.className='sec-card'; card.id='card-'+key;
+  const tab=document.createElement('div'); tab.className='sec-tab';
+  tab.innerHTML=`<h3>${SECTION_LABELS[key]}</h3><div class="sec-tab-right" id="tabr-${key}"><span class="sec-status"><span class="pulse"></span> generating…</span></div>`;
+  tab.onclick=()=>document.getElementById('prev-'+key).classList.toggle('closed');
+  const prev=document.createElement('div'); prev.className='sec-preview closed'; prev.id='prev-'+key;
+  card.appendChild(tab); card.appendChild(prev);
+  return card;
+}
+
+function sectionSummary(key,data){
+  try{
+    if(key==='hook') return data.hookLines.join('\n');
+    if(key==='preQuestCheck') return data.questions.map(q=>`${q.number}. ${q.text}`).join('\n\n')+'\n\n'+data.gatingSuggestion;
+    if(key==='archives') return data.parts.map(p=>p.title+'\n'+p.paragraphs.join('\n')).join('\n\n');
+    if(key==='questPack') return 'MISSION\n'+data.mission+'\n\n'+data.stages.map(s=>`Stage ${s.number} — ${s.name} (${s.day})\n${s.content||''}`).join('\n\n');
+    if(key==='links') return data.links.map(l=>`Link ${l.number}: ${l.covers}\n${l.url}`).join('\n\n');
+  }catch(e){} return JSON.stringify(data,null,2);
+}
+
+async function genSection(key,brief){
+  const sysJson=SPEC+'\n\nRespond ONLY with valid JSON. No preamble, no markdown fences.';
+  try{
+    let prompt;
+    switch(key){
+      case 'hook': prompt=PROMPTS.hook(brief); break;
+      case 'preQuestCheck': prompt=PROMPTS.preQuestCheck(brief); break;
+      case 'archives': prompt=PROMPTS.archives(brief); break;
+      case 'questPack': prompt=PROMPTS.questPack(brief); break;
+      case 'links': prompt=PROMPTS.links(brief); break;
+    }
+    const raw=await callAPI(sysJson,prompt,SECTION_TOKENS[key]);
+    const data=parseJ(raw);
+    ST.sections[key]=data;
+    document.getElementById('prev-'+key).textContent=sectionSummary(key,data);
+    document.getElementById('tabr-'+key).innerHTML=`<button class="dl-btn" id="dlbtn-${key}" onclick="dlPDF('${key}')">↓ PDF</button><span class="sec-status">Ready</span>`;
+  }catch(e){
+    document.getElementById('tabr-'+key).innerHTML=`<span class="sec-status err">${e.message} <button onclick="retrySec('${key}')" style="background:none;border:none;color:var(--stamp);text-decoration:underline;cursor:pointer;font-size:10px;">retry</button></span>`;
+  }
+}
+
+async function retrySec(key){
+  document.getElementById('tabr-'+key).innerHTML='<span class="sec-status"><span class="pulse"></span> retrying…</span>';
+  await genSection(key,ST.brief);
+  if(ST.brief) localStorage.setItem('rq:'+ST.brief.questId,JSON.stringify({brief:ST.brief,world:ST.world,level:ST.level,skill:ST.skill,lang:ST.lang,sections:ST.sections}));
+}
+
+/* === PDF TEMPLATES === */
+function rhead(brief,label){return `<div class="pdf-rhead"><span>${brief.questId} · ${brief.missionTitle.toUpperCase()}</span><span>${label.toUpperCase()}</span></div>`;}
+function rfoot(brief){return `<div class="pdf-foot"><span>Risers' Quests · Guide Use Only</span><span>${brief.questId}</span></div>`;}
+
+function tplHook(brief,data){
+  const svg=WORLD_SVGS[ST.world]||'';
+  const lines=data.hookLines||[];
+  const linesHTML=lines.map((l,i)=>`<p class="pdf-hook-line${i===lines.length-1?' cta':''}">${l}</p>`).join('');
+  return `<div class="pdf pdf-hook">
+    <div class="pdf-hook-deco">${svg}</div>
+    <div class="pdf-hook-world-row">
+      <div class="pdf-hook-letter">${(ST.world||'')[0]}</div>
+      <div class="pdf-hook-world-stack">
+        <span class="pdf-hook-world-name">${(ST.world||'').toUpperCase().split('').join(' ')}</span>
+        <span class="pdf-hook-world-sub">${WORLDS.find(w=>w.key===ST.world)?.desc||''}</span>
+      </div>
+    </div>
+    <div class="pdf-hook-mission-lbl">MISSION</div>
+    <h1 class="pdf-hook-title">${brief.missionTitle}</h1>
+    <div>${linesHTML}</div>
+    <div class="pdf-hook-bottom">
+      <div><span class="pdf-hook-lbl">CORE SKILL</span><span class="pdf-hook-val">${ST.skill}</span></div>
+      <div><span class="pdf-hook-lbl">LEVEL</span><span class="pdf-hook-val">${ST.level}</span></div>
+      <div class="pdf-hook-qid">${brief.questId}</div>
+    </div>
+  </div>`;
+}
+
+function tplPQC(brief,data){
+  const qs=(data.questions||[]).map(q=>{
+    if(q.type==='mcq'){
+      const opts=(q.options||[]).map(o=>`<div class="pdf-opt"><span class="pdf-box"></span><span>${o}</span></div>`).join('');
+      return `<div class="pdf-q"><div class="pdf-q-row"><span class="pdf-q-num">${q.number}</span><span class="pdf-q-text">${q.text}</span></div><div class="pdf-mcq-opts">${opts}</div></div>`;
+    }
+    return `<div class="pdf-q"><div class="pdf-q-row"><span class="pdf-q-num">${q.number}</span><span class="pdf-q-text">${q.text}</span></div><div class="pdf-work"><div class="pdf-work-lbl">Working</div><div class="pdf-line"></div><div class="pdf-line"></div><div class="pdf-ans-row"><span class="pdf-ans-lbl">My answer:</span><div class="pdf-ans-line"></div></div></div></div>`;
+  }).join('');
+  return `<div class="pdf"><div style="min-height:267mm;display:flex;flex-direction:column;">
+    ${rhead(brief,'Pre-Quest Check')}
+    <h2 class="pdf-pqc-title">Before You Begin</h2>
+    <p class="pdf-pqc-sub">${ST.world} · ${brief.missionTitle} · ${ST.level}</p>
+    <p class="pdf-pqc-intro">Five quick questions. No right or wrong way to feel about them — they're just here to help you figure out if now is the right moment for this quest.</p>
+    ${qs}
+    <div class="pdf-gating">${data.gatingSuggestion||''}</div>
+    <div style="margin-top:auto;">${rfoot(brief)}</div>
+  </div></div>`;
+}
+
+function tplArchives(brief,data){
+  const parts=(data.parts||[]).map(part=>{
+    const paras=(part.paragraphs||[]).map(p=>`<p>${p}</p>`).join('');
+    let tbl='';
+    if(part.table){
+      const ths=(part.table.headers||[]).map(h=>`<th>${h}</th>`).join('');
+      const trs=(part.table.rows||[]).map(r=>`<tr>${(r||[]).map(c=>`<td>${c}</td>`).join('')}</tr>`).join('');
+      tbl=`<table class="pdf-tbl"><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
+    }
+    return `<div><h3 class="pdf-part-title">${part.title}</h3>${paras}${tbl}</div>`;
+  }).join('');
+  return `<div class="pdf pdf-archives">
+    ${rhead(brief,'The Archives')}
+    <h2 class="pdf-arch-title">The Archives</h2>
+    <p class="pdf-arch-mission">Mission: ${brief.missionTitle}</p>
+    ${parts}
+    ${rfoot(brief)}
+  </div>`;
+}
+
+function tplQuestPack(brief,data){
+  const stages=(data.stages||[]).map(s=>{
+    let body='';
+    if(s.prompt) body+=`<p class="pdf-stage-prompt">${s.prompt}</p>`;
+    if(s.content) body+=`<p class="pdf-stage-content">${s.content}</p>`;
+    if(s.items){
+      body+=`<ul class="pdf-items">${(s.items||[]).map(i=>`<li>${i}</li>`).join('')}</ul>`;
+    }
+    if(s.partA){
+      const qa=(s.partA||[]);
+      const cells=qa.map((q,i)=>`<div class="pdf-bp-cell${i===4?' full':''}""><p class="pdf-bp-q">${q}</p><div class="pdf-bp-space"></div></div>`).join('');
+      body+=`<div><div class="pdf-bp-a-lbl">PART A · YOUR PREDICTION — Before you investigate, commit to what you think.</div><div class="pdf-bp-grid">${cells}</div></div>`;
+    }
+    if(s.partB){
+      body+=`<div class="pdf-bp-b"><div class="pdf-bp-b-lbl">PART B · YOUR RECORDING TOOL — Design it before ${brief.stage4Name} begins.</div><p class="pdf-stage-content">${s.partB}</p><div class="pdf-record-opts"><span>Table</span><span>Tracker</span><span>Grid</span><span>Tree</span><span>Flowchart</span></div></div>`;
+    }
+    return `<div class="pdf-stage"><div class="pdf-stage-hdr"><div class="pdf-stage-l"><span class="pdf-stage-num">Stage ${s.number}</span><span class="pdf-stage-name">${s.name}</span></div><div class="pdf-stage-r">${s.day} · ${s.role}</div></div>${body}</div>`;
+  }).join('');
+  const mats=data.materials?`<div class="pdf-materials"><div class="pdf-materials-lbl">Materials</div><ul class="pdf-mat-list">${data.materials.map(m=>`<li>${m}</li>`).join('')}</ul></div>`:'';
+  return `<div class="pdf">
+    ${rhead(brief,'Quest Pack')}
+    <div class="pdf-pack-meta"><b>Core Skill:</b> ${ST.skill}&nbsp;&nbsp;&nbsp;<b>Structure:</b> 3 Days · 6 Stages</div>
+    <div class="pdf-mission-lbl">THE MISSION</div>
+    <p class="pdf-mission-text">${data.mission||''}</p>
+    ${stages}
+    ${mats}
+    <div class="pdf-present"><div class="pdf-present-lbl">Present Your Case</div>${data.presentYourCase||''}</div>
+    ${rfoot(brief)}
+  </div>`;
+}
+
+function tplLinks(brief,data){
+  const links=(data.links||[]).map(l=>`<div class="pdf-link"><div class="pdf-link-num">Link ${String(l.number).padStart(2,'0')}</div><div class="pdf-link-covers">${l.covers}</div><p class="pdf-link-detail">${l.detail}</p><div class="pdf-link-url">${l.url}</div></div>`).join('');
+  return `<div class="pdf">
+    ${rhead(brief,'Research Links')}
+    <h2 class="pdf-links-title">Research Links</h2>
+    <p class="pdf-links-sub">${brief.questId} · ${brief.missionTitle} · For Guide Use — Send to Riser Before Day 1</p>
+    ${links}
+    <div class="pdf-guide-note"><div class="pdf-guide-note-lbl">Guide Note</div>${data.guideNote||''}</div>
+    ${rfoot(brief)}
+  </div>`;
+}
+
+const TPLS={hook:tplHook,preQuestCheck:tplPQC,archives:tplArchives,questPack:tplQuestPack,links:tplLinks};
+
+/* === PDF DOWNLOAD === */
+async function dlPDF(key){
+  const btn=document.getElementById('dlbtn-'+key);
+  if(btn){btn.textContent='⏳ building…';btn.disabled=true;}
+  try{
+    const data=ST.sections[key]; const brief=ST.brief;
+    if(!data||!brief) throw new Error('No data');
+    const html=TPLS[key](brief,data);
+    const zone=document.getElementById('pdfZone');
+    zone.innerHTML=html;
+    await document.fonts.ready;
+    await new Promise(r=>setTimeout(r,400));
+    const fname=`${brief.questId}_${SECTION_LABELS[key].replace(/\s/g,'_')}.pdf`;
+    await html2pdf().set({
+      margin:0,filename:fname,
+      image:{type:'jpeg',quality:0.97},
+      html2canvas:{scale:2,useCORS:true,letterRendering:true,logging:false},
+      jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
+      pagebreak:{mode:['avoid-all','css'],avoid:'.pdf-stage,.pdf-q,.pdf-link'}
+    }).from(zone.firstElementChild).save();
+    zone.innerHTML='';
+  }catch(e){alert('PDF failed: '+e.message);}
+  if(btn){btn.textContent='↓ PDF';btn.disabled=false;}
+}
+
+/* === REOPEN === */
+function reopenQuest(saved){
+  ST={world:saved.world,level:saved.level,skill:saved.skill,subject:null,lang:saved.lang||'',brief:saved.brief,sections:saved.sections};
+  const main=document.getElementById('mainArea'); main.innerHTML='';
+  const seal=document.createElement('div'); seal.className='quest-seal';
+  seal.innerHTML=`<div class="qid">${saved.brief.questId}</div><div class="qtitle">${saved.brief.missionTitle}</div>`;
+  main.appendChild(seal);
+  Object.keys(saved.sections).forEach(key=>{
+    const card=buildCard(key); main.appendChild(card);
+    document.getElementById('prev-'+key).textContent=sectionSummary(key,saved.sections[key]);
+    document.getElementById('tabr-'+key).innerHTML=`<button class="dl-btn" id="dlbtn-${key}" onclick="dlPDF('${key}')">↓ PDF</button><span class="sec-status">Ready</span>`;
+  });
+}
+
+document.getElementById('genBtn').onclick=generate;
+renderWorldGrid(); renderLevelRow(); renderSkillSelect(); renderLangSelect(); renderSavedList();
+</script>
+</body>
+</html>
