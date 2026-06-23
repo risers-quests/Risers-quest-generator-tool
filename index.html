@@ -625,7 +625,7 @@ function ctx() {
 
 const PROMPTS = {
 
-  brief: () => `${ctx()}\n\nReturn ONLY valid JSON (no markdown, no extra text):\n{"questId":"${WORLDS.find(w=>w.key===ST.world).letter}-${String(qCount+1).padStart(2,'0')}","missionTitle":"string","stage4Name":"Experiment Zero or Data Analysis","requiresLinks":false,"linkGapDescription":null}`,
+  brief: () => `${ctx()}\n\nGenerate a compelling mission title for this Quest. Style examples: "The Bone That Tells Everything", "The Heist", "The Bridge That Shouldn't Have Fallen", "The Last Signal". Make it specific, urgent, and intriguing for a child aged 8-14.\n\nReturn ONLY the title — no quotes, no punctuation at the end, no extra words.`,
 
   hook: (b) => `${ctx()}\nQuest: ${b.questId} — ${b.missionTitle}\n\nReturn ONLY valid JSON:\n{"hookLines":["line1","line2","line3","line4","imperative."]}\n\nHook rules: second person present tense, Riser IS in the situation, 4-6 lines max 12 words each, last line imperative max 5 words, Wanderer/Seeker use 9-year-old vocabulary, NEVER: quest mission task challenge learn skill.`,
 
